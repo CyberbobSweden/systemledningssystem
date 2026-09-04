@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System- och ackrediteringsstyrning</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:'IBM Plex Sans', system-ui, sans-serif; background:#F1F3F0; color:#16262B; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align:left; padding:8px 10px; font-size:13px; vertical-align:top; }
+  thead th { font-size:11px; letter-spacing:.02em; color:#56666B; font-weight:500; border-bottom:1px solid #D7DAD5; }
+  tbody tr.datarow { border-bottom:1px solid #EAECE8; }
+  tbody tr.datarow:hover { background:#F7F8F6; }
+  tr.detailrow td { background:#FBFCFA; border-bottom:1px solid #EAECE8; padding:16px; }
+  input, select, textarea {
+    font-family:inherit; font-size:13px; padding:6px 8px; border:1px solid #D7DAD5;
+    border-radius:3px; background:#fff; color:#16262B; width:100%;
+  }
+  input:focus, select:focus, textarea:focus { outline:2px solid #35564D33; border-color:#35564D; }
+  button { font-family:inherit; cursor:pointer; }
+  .btn { background:#35564D; color:#fff; border:none; padding:7px 14px; border-radius:3px; font-size:13px; font-weight:500; }
+  .btn:hover { background:#294238; }
+  .btn-ghost { background:transparent; color:#35564D; border:1px solid #35564D; padding:6px 12px; border-radius:3px; font-size:13px; }
+  .btn-ghost:hover { background:#DCE7E2; }
+  .btn-danger { background:transparent; color:#9C3B2E; border:none; font-size:12px; padding:4px 6px; }
+  .btn-danger:hover { text-decoration:underline; }
+  .btn-link { background:none; border:none; color:#35564D; font-size:12.5px; padding:0; text-decoration:underline; }
+  .pill { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:500; white-space:nowrap; }
+  .card { background:#fff; border:1px solid #D7DAD5; border-radius:6px; }
+  .field-label { font-size:11.5px; color:#56666B; margin-bottom:3px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+  .grid4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+  .grid5 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+  .grid6 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+  .span2 { grid-column: span 2; } .span3 { grid-column: span 3; }
+  #shell { display:flex; min-height:100vh; }
+  #sidebar { width:232px; flex-shrink:0; border-right:1px solid #D7DAD5; padding:22px 16px; background:#FBFCFA; }
+  #main { flex:1; padding:26px 34px; max-width:1220px; }
+  .navbtn { text-align:left; padding:8px 10px; border-radius:4px; border:none; background:transparent;
+    color:#3D4B4F; font-weight:400; font-size:13.5px; display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:2px; }
+  .navbtn.active { background:#DCE7E2; color:#294238; font-weight:600; }
+  .navbtn svg { flex-shrink:0; }
+  .badge { background:#9C3B2E; color:#fff; font-size:10.5px; border-radius:20px; padding:1px 6px; }
+  h1.title { font-family:'Source Serif 4', serif; font-size:22px; font-weight:600; margin:0; }
+  .subtitle { font-size:13px; color:#56666B; margin-top:4px; }
+  h3.card-title { font-size:14px; font-weight:600; margin:0 0 12px; display:flex; align-items:center; gap:8px; }
+  h4.mini-title { font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; color:#8B9A95; margin:16px 0 8px; font-weight:600; }
+  .stat-value { font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:500; }
+  .toast { position:fixed; bottom:20px; right:20px; background:#16262B; color:#fff; padding:10px 16px; border-radius:4px; font-size:13px; z-index:50; }
+  .month-card { padding:12px; min-height:90px; }
+  .month-label { font-size:12px; font-weight:600; color:#56666B; margin-bottom:8px; }
+  a.link { color:#35564D; }
+  .dot { font-size:15px; margin-right:5px; }
+  .dotrow { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; }
+  .dotrow .val { font-family:'IBM Plex Mono',monospace; font-weight:600; }
+
+  .hero { background: linear-gradient(135deg,#16262B 0%, #1F3A34 55%, #2C4A3E 100%); border-radius:10px; padding:28px 32px; color:#F1F3F0; margin-bottom:22px; }
+  .hero h1 { font-family:'Source Serif 4', serif; font-size:26px; margin:6px 0 6px; color:#fff; font-weight:600; }
+  .hero-sub { font-size:13px; color:#B8C4BE; max-width:620px; line-height:1.5; }
+  .hero-date { font-size:11.5px; color:#8FAFA0; letter-spacing:.02em; }
+  .hero-kpis { display:flex; gap:30px; margin-top:22px; flex-wrap:wrap; }
+  .kpi-gauge { display:flex; flex-direction:column; align-items:center; width:104px; }
+  .gauge-wrap { position:relative; width:82px; height:82px; }
+  .gauge-value { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:500; color:#fff; }
+  .kpi-plain { width:82px; height:82px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:28px; font-weight:600; }
+  .kpi-label { font-size:11px; color:#B8C4BE; margin-top:9px; text-align:center; line-height:1.3; }
+
+  .graph-legend { display:flex; gap:18px; margin-top:10px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#56666B; }
+  .legend-swatch { width:16px; height:3px; border-radius:2px; }
+  .todo-row { display:flex; gap:10px; align-items:flex-start; font-size:13px; padding:8px 10px; border-radius:4px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ---------------- Konstanter ----------------
+const KLASSER = ["Ej säkerhetsskyddsklassad","Klass 4 – Begränsat hemlig","Klass 3 – Konfidentiell","Klass 2 – Hemlig","Klass 1 – Kvalificerat hemlig"];
+const ARLIG_GRANSKNING_KLASSER = new Set(["Klass 3 – Konfidentiell","Klass 2 – Hemlig","Klass 1 – Kvalificerat hemlig"]);
+const STATUSAR = ["Ackrediterad","Villkorad ackreditering","Under ackreditering","Ej ackrediterad","Återkallad"];
+const KRITIKALITETER = ["Låg","Medel","Hög","Kritisk"];
+const DRIFTSMILJOER = ["On-premises","Molntjänst","Hybrid","Extern leverantör"];
+const LIVSCYKELFASER = ["Behov/Planering","Utveckling/Anskaffning","Ackreditering pågår","Drift/Förvaltning","Förändring pågår","Omprövning/Omackreditering","Avveckling"];
+const PORTFOLJSTATUS = ["Grön – Drift","Gul – Åtgärd","Röd – Problem"];
+const ACKREDITERINGSNIVAER = ["Lokal","Central","Central + lokal"];
+const KONTINUITETSSTATUS = ["Nej","Under framtagande","Ja"];
+const CONNECTION_TYPES = ["Beroende av","Integration mot","Dataflöde till"];
+const CONNECTION_COLORS = {"Beroende av":"#B4791F", "Integration mot":"#35564D", "Dataflöde till":"#3E6B8A"};
+const ANDRINGSTYPER = [
+  {v:"mjukvara", l:"Mjukvara", vasentlig:false},
+  {v:"hardvara", l:"Hårdvara", vasentlig:false},
+  {v:"anvandning", l:"Ändrad användning", vasentlig:true},
+  {v:"klass", l:"Ändrad informations-/säkerhetsskyddsklass", vasentlig:true},
+  {v:"hotbild", l:"Förändrad hotbild", vasentlig:true},
+  {v:"integration", l:"Ny/ändrad integration", vasentlig:true},
+  {v:"driftmiljo", l:"Ändrad driftmiljö", vasentlig:false},
+  {v:"annat", l:"Annat", vasentlig:false},
+];
+const PAVERKAN_OPTIONS = ["Nej","Möjligen","Ja"];
+const CHANGE_STATUS = ["Öppen","Bedömd","Genomförd"];
+const AKTIVITETSTYPER = ["Ackreditering","Omackreditering","Förberedelse","Uppföljning/Omprövning","Kontinuitetsövning","Övrigt"];
+const MANADER = ["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec"];
+const STORAGE_KEY = "systemtillsyn:data:v3";
+
+const ICONS = {
+  grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+  database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  link: '<circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><circle cx="18" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8.3 8.3l7.4 7.4M15.7 8.3l-7.4 7.4"/>',
+  alert: '<path d="M12 3.5l9.3 16.5H2.7z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.7" fill="currentColor" stroke="none"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>',
+  shield: '<path d="M12 3.2l7.5 2.8v5.6c0 4.7-3.2 7.9-7.5 8.4-4.3-.5-7.5-3.7-7.5-8.4V6z"/>',
+  users: '<circle cx="9" cy="8" r="3.1"/><path d="M3.5 20c0-3.4 2.5-5.9 5.5-5.9s5.5 2.5 5.5 5.9"/><circle cx="17.3" cy="9" r="2.5"/><path d="M15 14.3c2.3.3 4.3 2.3 4.3 5.7"/>',
+  download: '<path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 19h16"/>',
+  chevron: '<path d="M6 9l6 6 6-6"/>',
+  check: '<path d="M4 12l5 5L20 6"/>',
+};
+function icon(name, size) {
+  size = size || 16;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[name]||'')+'</svg>';
+}
+
+// ---------------- Hjälpfunktioner ----------------
+const todayISO = () => new Date().toISOString().slice(0,10);
+const daysUntil = (iso) => Math.ceil((new Date(iso) - new Date(todayISO())) / 86400000);
+const fmt = (iso) => iso ? new Date(iso).toLocaleDateString("sv-SE") : "—";
+const uid = () => Math.random().toString(36).slice(2,9);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function nextSystemId() {
+  let max = 0;
+  DB.systems.forEach(s => { const m = /SYS-(\d+)/.exec(s.systemId||''); if (m) max = Math.max(max, parseInt(m[1],10)); });
+  return "SYS-" + String(max+1).padStart(4,'0');
+}
+
+function seed() {
+  const y = new Date().getFullYear();
+  const systems = [
+    {id:uid(), systemId:"SYS-0001", namn:"LEDSYS-A", systemagare:"M. Ahlgren", produktagare:"J. Falk", forvaltare:"M. Ahlgren",
+     verksamhet:"Ledning", informationsklass:"Skyddsvärd", sakerhetsskyddsklass:"Klass 2 – Hemlig", ackrediteringsniva:"Central + lokal",
+     ackrediteringsstatus:"Ackrediterad", senasteAckreditering:`${y-1}-03-14`, giltigtBeslut:"FMV Dnr 2025-1123", nastaOmprovning:`${y}-03-14`,
+     kritikalitet:"Kritisk", livscykelfas:"Drift/Förvaltning", portfoljstatus:"Gul – Åtgärd",
+     leverantor:"Intern IT", driftsmiljo:"On-premises", lank:"https://internt-dokumentlager/exempel/ledsys-a", not:"",
+     centralAckrediteringsdatum:`${y-1}-02-20`, lokalAckrediteringsdatum:`${y-1}-03-14`,
+     kontinuitetsplan:"Ja", rto:"4", rpo:"1", kontinuitetsansvarig:"M. Ahlgren", senasteOvning:`${y}-02-10`, nastaOvning:`${y+1}-02-10`,
+     kravUppfyllda:97, kravEjUppfyllda:3, kravUnderAtgard:2,
+     kravEjUppfylldaLista:[{id:uid(),text:"Loggning av administratörsåtgärder"},{id:uid(),text:"Separering av testmiljö"},{id:uid(),text:"Uppdaterad säkerhetsskyddsplan"}],
+     kravUnderAtgardLista:[{id:uid(),text:"Multifaktorautentisering för fjärråtkomst"},{id:uid(),text:"Härdning av databasserver"}],
+     riskKritiska:0, riskHoga:2, riskMedel:4, riskLaga:8, senasteRiskbedomning:`${y}-05-14`},
+
+    {id:uid(), systemId:"SYS-0002", namn:"LOG-PORTAL", systemagare:"S. Berg", produktagare:"S. Berg", forvaltare:"S. Berg",
+     verksamhet:"Logistik", informationsklass:"Intern", sakerhetsskyddsklass:"Klass 4 – Begränsat hemlig", ackrediteringsniva:"Lokal",
+     ackrediteringsstatus:"Ackrediterad", senasteAckreditering:`${y-1}-09-01`, giltigtBeslut:"Lokalt beslut LB-114", nastaOmprovning:`${y+1}-09-01`,
+     kritikalitet:"Medel", livscykelfas:"Drift/Förvaltning", portfoljstatus:"Grön – Drift",
+     leverantor:"Extern leverantör AB", driftsmiljo:"Molntjänst", lank:"https://internt-dokumentlager/exempel/log-portal", not:"",
+     centralAckrediteringsdatum:"", lokalAckrediteringsdatum:`${y-1}-09-01`,
+     kontinuitetsplan:"Under framtagande", rto:"24", rpo:"12", kontinuitetsansvarig:"S. Berg", senasteOvning:"", nastaOvning:`${y}-10-15`,
+     kravUppfyllda:100, kravEjUppfyllda:0, kravUnderAtgard:0, kravEjUppfylldaLista:[], kravUnderAtgardLista:[],
+     riskKritiska:0, riskHoga:0, riskMedel:1, riskLaga:3, senasteRiskbedomning:`${y}-04-02`},
+
+    {id:uid(), systemId:"SYS-0003", namn:"PLAN-ÖST", systemagare:"K. Nyström", produktagare:"K. Nyström", forvaltare:"A. Sund",
+     verksamhet:"Planering", informationsklass:"Känslig", sakerhetsskyddsklass:"Klass 3 – Konfidentiell", ackrediteringsniva:"Central",
+     ackrediteringsstatus:"Under ackreditering", senasteAckreditering:"", giltigtBeslut:"", nastaOmprovning:`${y}-11-30`,
+     kritikalitet:"Hög", livscykelfas:"Ackreditering pågår", portfoljstatus:"Gul – Åtgärd",
+     leverantor:"Intern IT", driftsmiljo:"Hybrid", lank:"https://internt-dokumentlager/exempel/plan-ost", not:"Ny ackreditering pågår",
+     centralAckrediteringsdatum:"", lokalAckrediteringsdatum:"",
+     kontinuitetsplan:"Nej", rto:"8", rpo:"4", kontinuitetsansvarig:"K. Nyström", senasteOvning:"", nastaOvning:"",
+     kravUppfyllda:91, kravEjUppfyllda:9, kravUnderAtgard:5,
+     kravEjUppfylldaLista:[{id:uid(),text:"Riskbedömning av ny integration"},{id:uid(),text:"Behörighetsmodell ej fastställd"}],
+     kravUnderAtgardLista:[{id:uid(),text:"Säkerhetsskyddsavtal med leverantör"}],
+     riskKritiska:0, riskHoga:3, riskMedel:2, riskLaga:0, senasteRiskbedomning:`${y}-06-01`},
+
+    {id:uid(), systemId:"SYS-0004", namn:"FALT-KOMM", systemagare:"P. Ek", produktagare:"P. Ek", forvaltare:"P. Ek",
+     verksamhet:"Fältkommunikation", informationsklass:"Skyddsvärd", sakerhetsskyddsklass:"Klass 2 – Hemlig", ackrediteringsniva:"Central",
+     ackrediteringsstatus:"Villkorad ackreditering", senasteAckreditering:`${y-1}-06-01`, giltigtBeslut:"FMV Dnr 2024-887", nastaOmprovning:`${y}-01-20`,
+     kritikalitet:"Kritisk", livscykelfas:"Förändring pågår", portfoljstatus:"Röd – Problem",
+     leverantor:"Försvarsindustri X", driftsmiljo:"On-premises", lank:"https://internt-dokumentlager/exempel/falt-komm", not:"Villkor kopplade till åtgärdsplan",
+     centralAckrediteringsdatum:"", lokalAckrediteringsdatum:`${y-1}-06-15`,
+     kontinuitetsplan:"Nej", rto:"2", rpo:"0.5", kontinuitetsansvarig:"P. Ek", senasteOvning:"", nastaOvning:"",
+     kravUppfyllda:82, kravEjUppfyllda:18, kravUnderAtgard:6,
+     kravEjUppfylldaLista:[{id:uid(),text:"Kryptering av lagringsmedia"},{id:uid(),text:"Fysiskt skalskydd i fält"},{id:uid(),text:"Reservkraftlösning"}],
+     kravUnderAtgardLista:[{id:uid(),text:"Ny nyckelhanteringsrutin"}],
+     riskKritiska:1, riskHoga:6, riskMedel:5, riskLaga:2, senasteRiskbedomning:`${y}-07-22`},
+  ];
+  const [a,b,c,d] = systems.map(s => s.id);
+  return {
+    systems,
+    connections: [
+      {id:uid(), fromId:c, toId:a, typ:"Integration mot"},
+      {id:uid(), fromId:d, toId:a, typ:"Dataflöde till"},
+    ],
+    changes: [
+      {id:uid(), systemId:a, datum:`${y}-06-02`, typ:"hotbild", beskrivning:"Förändrad hotbild enligt underrättelse (ref. extern)", ansvarig:"M. Ahlgren", paverkan:"Ja", planeradOmackreditering:`${y}-12-10`, planeradTimmar:40, planeradKostnad:25000, status:"Bedömd"},
+      {id:uid(), systemId:b, datum:`${y}-07-18`, typ:"mjukvara", beskrivning:"Uppgradering av plattformsversion", ansvarig:"S. Berg", paverkan:"Nej", planeradOmackreditering:"", planeradTimmar:0, planeradKostnad:0, status:"Bedömd"},
+      {id:uid(), systemId:c, datum:`${y}-09-05`, typ:"integration", beskrivning:"Ny integration mot LEDSYS-A", ansvarig:"K. Nyström", paverkan:"Möjligen", planeradOmackreditering:`${y}-10-01`, planeradTimmar:12, planeradKostnad:0, status:"Öppen"},
+      {id:uid(), systemId:d, datum:`${y+1}-02-01`, typ:"driftmiljo", beskrivning:"Större ombyggnad av kommunikationsnod", ansvarig:"P. Ek", paverkan:"Ja", planeradOmackreditering:`${y+1}-03-01`, planeradTimmar:60, planeradKostnad:90000, status:"Öppen"},
+    ],
+    activities: [
+      {id:uid(), systemId:a, typ:"Uppföljning/Omprövning", manad:3, ar:y, ansvarig:"M. Ahlgren", timmar:16, kostnad:0, sourceChangeId:null},
+      {id:uid(), systemId:null, typ:"Övrigt", manad:4, ar:y, ansvarig:"S. Berg", timmar:8, kostnad:0, sourceChangeId:null},
+      {id:uid(), systemId:c, typ:"Ackreditering", manad:11, ar:y, ansvarig:"K. Nyström", timmar:24, kostnad:15000, sourceChangeId:null},
+      {id:uid(), systemId:a, typ:"Kontinuitetsövning", manad:2, ar:y, ansvarig:"M. Ahlgren", timmar:10, kostnad:0, sourceChangeId:null},
+    ],
+    people: [
+      {id:uid(), namn:"M. Ahlgren", kapacitet:20},
+      {id:uid(), namn:"S. Berg", kapacitet:15},
+      {id:uid(), namn:"K. Nyström", kapacitet:25},
+      {id:uid(), namn:"P. Ek", kapacitet:18},
+    ],
+    budgetRam: { [y]: 320000, [y+1]: 280000 },
+  };
+}
+
+function migrate(data) {
+  const d = Object.assign({systems:[],changes:[],activities:[],people:[],connections:[],budgetRam:{}}, data||{});
+  if (typeof d.budgetRam === "number") { const y = new Date().getFullYear(); d.budgetRam = { [y]: d.budgetRam }; }
+  d.systems = (d.systems||[]).map(s => Object.assign({
+    id: uid(), systemId:"", namn:"", systemagare:"", produktagare:"", forvaltare:"", verksamhet:"",
+    informationsklass:"", sakerhetsskyddsklass:KLASSER[0], ackrediteringsniva:ACKREDITERINGSNIVAER[0],
+    ackrediteringsstatus:STATUSAR[2], senasteAckreditering:"", giltigtBeslut:"", nastaOmprovning:"",
+    kritikalitet:"Medel", livscykelfas:LIVSCYKELFASER[3], portfoljstatus:PORTFOLJSTATUS[0],
+    leverantor:"", driftsmiljo:DRIFTSMILJOER[0], lank:"", not:"",
+    centralAckrediteringsdatum:"", lokalAckrediteringsdatum:"",
+    kontinuitetsplan:"Nej", rto:"", rpo:"", kontinuitetsansvarig:"", senasteOvning:"", nastaOvning:"",
+    kravUppfyllda:0, kravEjUppfyllda:0, kravUnderAtgard:0, kravEjUppfylldaLista:[], kravUnderAtgardLista:[],
+    riskKritiska:0, riskHoga:0, riskMedel:0, riskLaga:0, senasteRiskbedomning:"",
+  }, s));
+  d.connections = d.connections || [];
+  d.changes = (d.changes||[]).map(c => Object.assign({id:uid(), systemId:"", datum:"", typ:"annat", beskrivning:"", ansvarig:"", paverkan:"Nej", planeradOmackreditering:"", planeradTimmar:0, planeradKostnad:0, status:"Öppen"}, c));
+  d.activities = (d.activities||[]).map(a => Object.assign({id:uid(), systemId:null, typ:"Övrigt", manad:1, ar:new Date().getFullYear(), ansvarig:"", timmar:0, kostnad:0, sourceChangeId:null}, a));
+  return d;
+}
+
+// ---------------- State ----------------
+let DB;
+try {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  DB = migrate(raw ? JSON.parse(raw) : seed());
+} catch(e) { DB = migrate(seed()); }
+
+let UI = { tab: "dashboard", year: new Date().getFullYear(), showNewSystem: false, expanded: null, registerFilter: "" };
+
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
+  catch(e) { toast("Kunde inte spara — lokal lagring otillgänglig."); }
+}
+function toast(msg) {
+  let t = document.getElementById("toast");
+  if (!t) { t = document.createElement("div"); t.id="toast"; t.className="toast"; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.style.display = "none", 3200);
+}
+function sysById(id) { return DB.systems.find(s => s.id === id); }
+function relatedSystems(id) {
+  const ids = new Set();
+  DB.connections.forEach(cn => { if (cn.fromId===id) ids.add(cn.toId); if (cn.toId===id) ids.add(cn.fromId); });
+  return [...ids].map(sysById).filter(Boolean);
+}
+function nextChangeForSystem(id) {
+  return DB.changes.filter(c=>c.systemId===id && c.datum && c.datum>=todayISO()).sort((a,b)=>a.datum<b.datum?-1:1)[0];
+}
+function changeFlagForSystem(id) {
+  const cs = DB.changes.filter(c=>c.systemId===id);
+  if (cs.some(c=>c.paverkan==="Ja")) return "ja";
+  if (cs.some(c=>c.paverkan==="Möjligen")) return "bedom";
+  return "nej";
+}
+
+// ---------------- Derived / aggregat ----------------
+// OBS: alla resurs- och budgetberäkningar är årsbundna (parametern "year").
+// Det förhindrar att timmar/kostnader från olika år råkar summeras ihop.
+function computeMonthLoad(year) {
+  const load = {};
+  for (const p of DB.people) load[p.namn] = Array(12).fill(0);
+  for (const a of DB.activities) {
+    if (a.ar !== year) continue;
+    if (!load[a.ansvarig]) load[a.ansvarig] = Array(12).fill(0);
+    load[a.ansvarig][a.manad-1] += Number(a.timmar) || 0;
+  }
+  return load;
+}
+function totalCost(year) { return DB.activities.filter(a=>a.ar===year).reduce((s,a) => s + (Number(a.kostnad)||0), 0); }
+function getBudgetRam(year) { return (DB.budgetRam && DB.budgetRam[year]) || 0; }
+function setBudgetRam(year, value) { DB.budgetRam = DB.budgetRam || {}; DB.budgetRam[year] = Number(value)||0; }
+function avgCapacityUtil(monthLoad) {
+  const vals = DB.people.map(p => {
+    const load = monthLoad[p.namn]||Array(12).fill(0);
+    const max = Math.max(...load,0);
+    return p.kapacitet>0 ? (max/p.kapacitet*100) : 0;
+  });
+  if (!vals.length) return 0;
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+}
+function aggregatePortfolio() {
+  const counts = {"Grön – Drift":0, "Gul – Åtgärd":0, "Röd – Problem":0};
+  DB.systems.forEach(s => { counts[s.portfoljstatus] = (counts[s.portfoljstatus]||0)+1; });
+  return counts;
+}
+function aggregateAckreditering() {
+  const giltig = DB.systems.filter(s=>s.ackrediteringsstatus==="Ackrediterad").length;
+  const nasta90 = DB.systems.filter(s=>s.nastaOmprovning && daysUntil(s.nastaOmprovning)>=0 && daysUntil(s.nastaOmprovning)<=90).length;
+  const forsenad = DB.systems.filter(s=>s.nastaOmprovning && daysUntil(s.nastaOmprovning)<0).length;
+  const potentiell = DB.systems.filter(s => changeFlagForSystem(s.id) !== "nej").length;
+  return {giltig, nasta90, forsenad, potentiell};
+}
+function aggregateKrav() {
+  return DB.systems.reduce((acc,s)=>{ acc.ok += Number(s.kravUppfyllda)||0; acc.ej += Number(s.kravEjUppfyllda)||0; acc.atgard += Number(s.kravUnderAtgard)||0; return acc; }, {ok:0, ej:0, atgard:0});
+}
+function aggregateRisk() {
+  return DB.systems.reduce((acc,s)=>{ acc.krit+=Number(s.riskKritiska)||0; acc.hog+=Number(s.riskHoga)||0; acc.med+=Number(s.riskMedel)||0; acc.lag+=Number(s.riskLaga)||0; return acc; }, {krit:0,hog:0,med:0,lag:0});
+}
+function aggregateForandringar() {
+  const kommande = DB.changes.filter(c=>c.datum && c.datum>=todayISO());
+  const paverkar = DB.changes.filter(c=>c.paverkan==="Möjligen");
+  const kraverOm = DB.changes.filter(c=>c.paverkan==="Ja");
+  return {total: kommande.length, paverkar: paverkar.length, kraverOm: kraverOm.length};
+}
+function buildTodoList() {
+  const items = [];
+  DB.systems.forEach(s => {
+    if (s.nastaOmprovning) {
+      const dgr = daysUntil(s.nastaOmprovning);
+      if (dgr < 0) items.push({tone:'crit', text:`${s.namn} – ackreditering löpte ut ${fmt(s.nastaOmprovning)}`, sort:dgr});
+      else if (dgr <= 90) items.push({tone:'warn', text:`${s.namn} – ackreditering löper ut ${fmt(s.nastaOmprovning)} (${dgr} dgr)`, sort:dgr+300});
+    }
+    if ((s.kravEjUppfyllda||0) > 0) items.push({tone: s.kravEjUppfyllda>=10?'crit':'warn', text:`${s.namn} – ${s.kravEjUppfyllda} ej uppfyllda krav`, sort:500});
+    const riskSum = (Number(s.riskKritiska)||0) + (Number(s.riskHoga)||0);
+    if (riskSum > 0) items.push({tone: s.riskKritiska>0?'crit':'warn', text:`${s.namn} – ${riskSum} höga/kritiska risker`, sort:520});
+    if (s.lokalAckrediteringsdatum && !s.centralAckrediteringsdatum) items.push({tone:'warn', text:`${s.namn} – lokal ackreditering registrerad utan central ackreditering, kontrollera ordningen`, sort:400});
+  });
+  DB.changes.forEach(c => {
+    const sname = sysById(c.systemId)?.namn || "Okänt system";
+    if (c.paverkan==="Möjligen" && c.status!=="Genomförd") items.push({tone:'warn', text:`${sname} – ${c.beskrivning} → bedöm ackrediteringspåverkan`, sort:250});
+    if (c.paverkan==="Ja") {
+      items.push({tone:'crit', text:`${sname} – ${c.beskrivning} kräver omackreditering${c.planeradOmackreditering ? ' (planerad '+fmt(c.planeradOmackreditering)+')':''}`, sort:150});
+      const rel = relatedSystems(c.systemId);
+      if (rel.length) items.push({tone:'warn', text:`${sname}s förändring kan även påverka kopplade system: ${rel.map(r=>r.namn).join(', ')}`, sort:350});
+    }
+    if (c.paverkan==="Nej" && c.datum && daysUntil(c.datum)>=0 && daysUntil(c.datum)<=90) {
+      items.push({tone:'info', text:`${sname} – planerad förändring: ${c.beskrivning} (${fmt(c.datum)})`, sort:600});
+    }
+  });
+  const thisYear = new Date().getFullYear();
+  const monthLoad = computeMonthLoad(thisYear);
+  const overload = Object.entries(monthLoad).filter(([name,arr]) => { const p = DB.people.find(pp=>pp.namn===name); return p && arr.some(h=>h>p.kapacitet); });
+  if (overload.length) items.push({tone:'warn', text:`Resursöverbelastning hos ${overload.map(([n])=>n).join(', ')} ${thisYear} — se Ackrediteringsårshjul`, sort:700});
+  const ram = getBudgetRam(thisYear), cost = totalCost(thisYear);
+  if (ram > 0 && cost > ram) items.push({tone:'crit', text:`Budgetram ${thisYear} är överskriden: planerad kostnad ${cost.toLocaleString("sv-SE")} kr mot ram ${ram.toLocaleString("sv-SE")} kr`, sort:120});
+  items.sort((a,b)=>a.sort-b.sort);
+  return items;
+}
+
+// ---------------- Render root ----------------
+function render() {
+  const nav = [
+    ["dashboard","Översikt","grid"],
+    ["register","Systemregister","database"],
+    ["graph","Systemsamband","link"],
+    ["changes","Förändring & omackreditering","alert"],
+    ["wheel","Ackrediteringsårshjul","calendar"],
+    ["continuity","Kontinuitet","shield"],
+    ["resources","Resurser & budget","users"],
+    ["export","Export & backup","download"],
+  ];
+  const todo = buildTodoList();
+  const critCount = todo.filter(t=>t.tone==='crit').length;
+
+  document.getElementById("app").innerHTML = `
+    <div id="shell">
+      <aside id="sidebar">
+        <div style="font-family:'Source Serif 4', serif; font-size:17px; font-weight:600; line-height:1.25; margin-bottom:2px;">System- &amp; ackrediterings&shy;styrning</div>
+        <div style="font-size:11.5px; color:#56666B; margin-bottom:24px;">Livscykel- och portföljstyrning för IT-system</div>
+        <nav>
+          ${nav.map(([k,label,ic]) => `
+            <button class="navbtn ${UI.tab===k?'active':''}" onclick="setTab('${k}')">
+              <span style="display:flex; align-items:center; gap:9px;">${icon(ic)}${label}</span>
+              ${k==='dashboard' && critCount>0 ? `<span class="badge">${critCount}</span>` : ''}
+            </button>`).join('')}
+        </nav>
+        <div style="margin-top:24px; font-size:11px; color:#8B9A95; line-height:1.5; border-top:1px solid #D7DAD5; padding-top:12px;">
+          Endast icke-känslig metadata hanteras här. Underlag, kravmassa och riskdetaljer länkas till externt dokumentlager.
+        </div>
+        <div style="margin-top:10px; font-size:10.5px; color:#B7C0BC; line-height:1.5;">Regelverksnotering: FFS 2025:3 gäller från 2026-07-01 — stäm av era rutiner mot gällande föreskrift.</div>
+        <div style="margin-top:10px; font-size:10.5px; color:#B7C0BC;">Data sparas lokalt i denna webbläsare (localStorage).</div>
+      </aside>
+      <main id="main">${renderTab(todo)}</main>
+    </div>
+  `;
+}
+
+function renderTab(todo) {
+  switch(UI.tab) {
+    case "dashboard": return renderDashboard(todo);
+    case "register": return renderRegister();
+    case "graph": return renderGraph();
+    case "changes": return renderChanges();
+    case "wheel": return renderWheel();
+    case "continuity": return renderContinuity();
+    case "resources": return renderResources();
+    case "export": return renderExport();
+    default: return "";
+  }
+}
+
+function sectionTitle(title, sub) {
+  return `<div style="margin-bottom:20px;"><h1 class="title">${esc(title)}</h1>${sub?`<div class="subtitle">${esc(sub)}</div>`:''}</div>`;
+}
+function field(label, inner, wide) { return `<div${wide?' class="span3"':''}><div class="field-label">${esc(label)}</div>${inner}</div>`; }
+function gaugeSVG(pct, color) {
+  const r = 34, c = 2*Math.PI*r; const dash = (pct/100)*c;
+  return `<svg width="82" height="82" viewBox="0 0 84 84">
+    <circle cx="42" cy="42" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="8"/>
+    <circle cx="42" cy="42" r="${r}" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${dash} ${c}" transform="rotate(-90 42 42)"/>
+  </svg>`;
+}
+function gaugeColor(pct, invert) {
+  if (invert) { if (pct>100) return '#E08979'; if (pct>=75) return '#E0B569'; return '#7FC4A8'; }
+  if (pct>=80) return '#7FC4A8'; if (pct>=50) return '#E0B569'; return '#E08979';
+}
+function kpiGauge(label, valueText, pct, color) {
+  const clamped = Math.max(0, Math.min(100, pct));
+  return `<div class="kpi-gauge"><div class="gauge-wrap">${gaugeSVG(clamped, color)}<div class="gauge-value">${esc(valueText)}</div></div><div class="kpi-label">${esc(label)}</div></div>`;
+}
+function kpiPlain(label, value, color) { return `<div class="kpi-gauge"><div class="kpi-plain" style="color:${color};">${esc(value)}</div><div class="kpi-label">${esc(label)}</div></div>`; }
+function kritPill(k) {
+  const map = {"Låg":["#DCE7E2","#294238"], "Medel":["#E4E9EC","#3D4B4F"], "Hög":["#F4E3C8","#8A5A0F"], "Kritisk":["#F3DDD8","#9C3B2E"]};
+  const [bg,fg] = map[k]||["#eee","#333"];
+  return `<span class="pill" style="background:${bg}; color:${fg};">${esc(k||"—")}</span>`;
+}
+function dot(color) { return `<span class="dot" style="color:${color};">●</span>`; }
+function portfoljDotLabel(status) {
+  const map = {"Grön – Drift":["#3AA876","Drift"], "Gul – Åtgärd":["#D9A227","Åtgärd"], "Röd – Problem":["#C0392B","Problem"]};
+  const [color,label] = map[status] || ["#8B9A95", status||"—"];
+  return dot(color) + esc(label);
+}
+function omackrediteringCell(id) {
+  const flag = changeFlagForSystem(id);
+  if (flag==="ja") return `<span class="pill" style="background:#F3DDD8; color:#9C3B2E;">Ja</span>`;
+  if (flag==="bedom") return `<span class="pill" style="background:#F4E3C8; color:#8A5A0F;">Bedöm</span>`;
+  return `<span style="color:#8B9A95;">Nej</span>`;
+}
+function statCard(title, rows) {
+  return `<div class="card" style="padding:16px;">
+    <h3 class="card-title">${esc(title)}</h3>
+    ${rows.map(r=>`<div class="dotrow"><span>${dot(r.color)}${esc(r.label)}</span><span class="val">${r.value}</span></div>`).join('')}
+  </div>`;
+}
+
+// ---------------- Dashboard ----------------
+function renderDashboard(todo) {
+  const thisYear = new Date().getFullYear();
+  const monthLoad = computeMonthLoad(thisYear);
+  const capacityPct = avgCapacityUtil(monthLoad);
+  const portfolio = aggregatePortfolio();
+  const ackred = aggregateAckreditering();
+  const krav = aggregateKrav();
+  const risk = aggregateRisk();
+  const forand = aggregateForandringar();
+  const giltigRate = DB.systems.length ? Math.round(ackred.giltig/DB.systems.length*100) : 0;
+  const kravRate = (krav.ok+krav.ej) ? Math.round(krav.ok/(krav.ok+krav.ej)*100) : 100;
+  const ram = getBudgetRam(thisYear), cost = totalCost(thisYear);
+  const budgetPct = ram ? Math.round(cost/ram*100) : 0;
+
+  const shown = todo.slice(0,8);
+  const toneStyle = {crit:["#F3DDD8","#9C3B2E"], warn:["#F4E3C8","#8A5A0F"], info:["#E4E9EC","#3D4B4F"]};
+
+  return `
+    <div class="hero">
+      <div class="hero-date">${fmt(todayISO())}</div>
+      <h1>Systemportfölj</h1>
+      <div class="hero-sub">${DB.systems.length} system under förvaltning. "Vilka system har vi, vilket skick är de i, när måste de ackrediteras/omackrediteras, vad är på gång att förändras och hur påverkar det vår ackrediteringsplan?"</div>
+      <div class="hero-kpis">
+        ${kpiGauge("Andel giltig ackreditering", giltigRate+"%", giltigRate, gaugeColor(giltigRate,false))}
+        ${kpiGauge("Kravuppfyllnadsgrad", kravRate+"%", kravRate, gaugeColor(kravRate,false))}
+        ${kpiGauge("Kapacitetsbelastning "+thisYear, capacityPct+"%", capacityPct, gaugeColor(capacityPct,true))}
+        ${ram>0 ? kpiGauge("Budgetutnyttjande "+thisYear, budgetPct+"%", budgetPct, gaugeColor(budgetPct,true)) : kpiPlain("Budgetram "+thisYear, "ej satt", '#B8C4BE')}
+        ${kpiPlain("Kräver åtgärd", todo.filter(t=>t.tone==='crit').length, '#E08979')}
+      </div>
+    </div>
+
+    <div class="grid5">
+      ${statCard("Systemportfölj", [
+        {color:'#3AA876', label:'Drift', value: portfolio["Grön – Drift"]},
+        {color:'#D9A227', label:'Under åtgärd', value: portfolio["Gul – Åtgärd"]},
+        {color:'#C0392B', label:'Problem', value: portfolio["Röd – Problem"]},
+      ])}
+      ${statCard("Ackreditering", [
+        {color:'#3AA876', label:'Giltig', value: ackred.giltig},
+        {color:'#D9A227', label:'Nästa 90 dagar', value: ackred.nasta90},
+        {color:'#C0392B', label:'Försenad', value: ackred.forsenad},
+        {color:'#8A5A0F', label:'Potentiell omackreditering', value: ackred.potentiell},
+      ])}
+      ${statCard("Krav", [
+        {color:'#3AA876', label:'Uppfyllda', value: krav.ok},
+        {color:'#C0392B', label:'Ej uppfyllda', value: krav.ej},
+        {color:'#D9A227', label:'Under åtgärd', value: krav.atgard},
+      ])}
+      ${statCard("Risk", [
+        {color:'#C0392B', label:'Kritiska', value: risk.krit},
+        {color:'#E07A3F', label:'Höga', value: risk.hog},
+        {color:'#D9A227', label:'Medel', value: risk.med},
+        {color:'#3AA876', label:'Låga', value: risk.lag},
+      ])}
+      ${statCard("Kommande förändringar", [
+        {color:'#56666B', label:'Totalt', value: forand.total},
+        {color:'#D9A227', label:'Kan påverka ackreditering', value: forand.paverkar},
+        {color:'#C0392B', label:'Kräver omackreditering', value: forand.kraverOm},
+      ])}
+    </div>
+
+    <div class="card" style="padding:18px; margin-top:4px; margin-bottom:20px;">
+      <h3 class="card-title">${icon("alert")} Vad måste vi göra? — nästa 90 dagar</h3>
+      ${shown.length===0 ? `<div style="font-size:13px; color:#56666B;">Inget brådskande just nu.</div>` :
+        shown.map(t => { const [bg,fg] = toneStyle[t.tone]; return `<div class="todo-row" style="background:${bg}; color:${fg}; margin-bottom:6px;">${t.text}</div>`; }).join('')}
+      ${todo.length>8 ? `<div style="font-size:12px; color:#56666B; margin-top:8px;">Visar 8 av ${todo.length} punkter.</div>` : ''}
+    </div>
+
+    <div class="card" style="overflow:auto;">
+      <table>
+        <thead><tr><th>System</th><th>Ägare</th><th>Status</th><th>Senast ackrediterad</th><th>Nästa ackreditering</th><th>Krav OK</th><th>Krav ej OK</th><th>Risker</th><th>Planerad förändring</th><th>Omackreditering</th></tr></thead>
+        <tbody>
+          ${DB.systems.map(s => {
+            const nc = nextChangeForSystem(s.id);
+            const riskTotal = (Number(s.riskKritiska)||0)+(Number(s.riskHoga)||0)+(Number(s.riskMedel)||0)+(Number(s.riskLaga)||0);
+            return `<tr class="datarow">
+              <td style="font-weight:600;">${esc(s.namn)}</td>
+              <td>${esc(s.systemagare)}</td>
+              <td>${portfoljDotLabel(s.portfoljstatus)}</td>
+              <td>${fmt(s.senasteAckreditering)}</td>
+              <td>${fmt(s.nastaOmprovning)}</td>
+              <td>${s.kravUppfyllda}</td>
+              <td>${s.kravEjUppfyllda}</td>
+              <td>${riskTotal}</td>
+              <td>${nc ? esc(nc.beskrivning) : '—'}</td>
+              <td>${omackrediteringCell(s.id)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ---------------- Systemregister ----------------
+function renderRegister() {
+  const filterVal = UI.registerFilter.toLowerCase();
+  const filtered = DB.systems.filter(s => !filterVal ||
+    (s.namn||"").toLowerCase().includes(filterVal) || (s.systemagare||"").toLowerCase().includes(filterVal) ||
+    (s.leverantor||"").toLowerCase().includes(filterVal) || (s.sakerhetsskyddsklass||"").toLowerCase().includes(filterVal) ||
+    (s.systemId||"").toLowerCase().includes(filterVal));
+
+  return `
+    ${sectionTitle("Systemregister", "Systemkort per system — grunddata, klassificering, krav- och riskstatus. Inga känsliga uppgifter lagras här.")}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px;">
+      <input id="register-search" placeholder="Sök system-ID, namn, ägare, leverantör…" value="${esc(UI.registerFilter)}" style="max-width:300px;" oninput="updateRegisterFilter(this.value)">
+      <button class="btn" onclick="toggleNewSystem()">${UI.showNewSystem?'Avbryt':'+ Nytt system'}</button>
+    </div>
+    ${UI.showNewSystem ? `
+      <div class="card" style="padding:16px; margin-bottom:18px;">
+        <div class="grid5">
+          ${field("System-ID", `<input id="ns-id" value="${esc(nextSystemId())}">`)}
+          ${field("Systemnamn", `<input id="ns-namn">`)}
+          ${field("Systemägare", `<input id="ns-agare">`)}
+          ${field("Förvaltare", `<input id="ns-forvaltare">`)}
+          ${field("Verksamhet", `<input id="ns-verksamhet">`)}
+        </div>
+        <div class="grid5">
+          ${field("Säkerhetsskyddsklass", `<select id="ns-klass">${KLASSER.map(k=>`<option>${esc(k)}</option>`).join('')}</select>`)}
+          ${field("Ackrediteringsnivå", `<select id="ns-niva">${ACKREDITERINGSNIVAER.map(k=>`<option>${esc(k)}</option>`).join('')}</select>`)}
+          ${field("Kritikalitet", `<select id="ns-kritikalitet">${KRITIKALITETER.map(k=>`<option ${k==="Medel"?'selected':''}>${esc(k)}</option>`).join('')}</select>`)}
+          ${field("Ackrediteringsstatus", `<select id="ns-status">${STATUSAR.map(s=>`<option>${esc(s)}</option>`).join('')}</select>`)}
+          ${field("Portföljstatus", `<select id="ns-portfolj">${PORTFOLJSTATUS.map(k=>`<option>${esc(k)}</option>`).join('')}</select>`)}
+        </div>
+        <div class="grid3">
+          ${field("Senaste ackreditering", `<input id="ns-senast" type="date">`)}
+          ${field("Nästa omprövning", `<input id="ns-nasta" type="date">`)}
+          ${field("Länk till underlag (externt)", `<input id="ns-lank" placeholder="https://…">`)}
+        </div>
+        <button class="btn" onclick="addSystem()">Spara system</button>
+      </div>` : ''}
+    <div class="card" style="overflow:hidden;">
+      <table>
+        <thead><tr><th></th><th>System-ID</th><th>System</th><th>Ägare</th><th>Klass</th><th>Kritikalitet</th><th>Status</th><th>Nästa omprövning</th><th></th></tr></thead>
+        <tbody>
+          ${filtered.length===0 ? `<tr><td colspan="9" style="color:#56666B; padding:16px;">Inga system matchar sökningen.</td></tr>` : filtered.map(s => {
+            const d = s.nastaOmprovning ? daysUntil(s.nastaOmprovning) : null;
+            const color = d!==null && d<0 ? '#9C3B2E' : d!==null && d<=30 ? '#8A5A0F' : '#16262B';
+            const isOpen = UI.expanded === s.id;
+            const rel = relatedSystems(s.id);
+            return `<tr class="datarow">
+              <td style="width:24px;"><button class="btn-link" onclick="toggleExpand('${s.id}')" style="text-decoration:none;">${icon('chevron', 14)}</button></td>
+              <td style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#56666B;">${esc(s.systemId)}</td>
+              <td style="font-weight:600; cursor:pointer;" onclick="toggleExpand('${s.id}')">${esc(s.namn)}</td>
+              <td>${esc(s.systemagare)}</td>
+              <td>${esc(s.sakerhetsskyddsklass)}</td>
+              <td>${kritPill(s.kritikalitet)}</td>
+              <td><select style="width:auto;" onchange="updateSystem('${s.id}','ackrediteringsstatus',this.value)">
+                ${STATUSAR.map(st=>`<option ${st===s.ackrediteringsstatus?'selected':''}>${esc(st)}</option>`).join('')}
+              </select></td>
+              <td style="color:${color};">${fmt(s.nastaOmprovning)}${d!==null && d<0 ? ' (försenad)' : ''}</td>
+              <td><button class="btn-danger" onclick="removeSystem('${s.id}')">Ta bort</button></td>
+            </tr>
+            ${isOpen ? `<tr class="detailrow"><td colspan="9">
+              <h4 class="mini-title">Ansvar &amp; klassificering</h4>
+              <div class="grid4">
+                ${field("Produktägare", `<input value="${esc(s.produktagare)}" onchange="updateSystem('${s.id}','produktagare',this.value)">`)}
+                ${field("Förvaltare", `<input value="${esc(s.forvaltare)}" onchange="updateSystem('${s.id}','forvaltare',this.value)">`)}
+                ${field("Verksamhet", `<input value="${esc(s.verksamhet)}" onchange="updateSystem('${s.id}','verksamhet',this.value)">`)}
+                ${field("Informationsklass", `<input value="${esc(s.informationsklass)}" onchange="updateSystem('${s.id}','informationsklass',this.value)">`)}
+              </div>
+              <div class="grid4">
+                ${field("Leverantör", `<input value="${esc(s.leverantor)}" onchange="updateSystem('${s.id}','leverantor',this.value)">`)}
+                ${field("Driftsmiljö", `<select onchange="updateSystem('${s.id}','driftsmiljo',this.value)">${DRIFTSMILJOER.map(k=>`<option ${k===s.driftsmiljo?'selected':''}>${esc(k)}</option>`).join('')}</select>`)}
+                ${field("Livscykelfas", `<select onchange="updateSystem('${s.id}','livscykelfas',this.value)">${LIVSCYKELFASER.map(k=>`<option ${k===s.livscykelfas?'selected':''}>${esc(k)}</option>`).join('')}</select>`)}
+                ${field("Portföljstatus", `<select onchange="updateSystem('${s.id}','portfoljstatus',this.value)">${PORTFOLJSTATUS.map(k=>`<option ${k===s.portfoljstatus?'selected':''}>${esc(k)}</option>`).join('')}</select>`)}
+              </div>
+
+              <h4 class="mini-title">Ackreditering</h4>
+              <div class="grid4">
+                ${field("Ackrediteringsnivå", `<select onchange="updateSystem('${s.id}','ackrediteringsniva',this.value)">${ACKREDITERINGSNIVAER.map(k=>`<option ${k===s.ackrediteringsniva?'selected':''}>${esc(k)}</option>`).join('')}</select>`)}
+                ${field("Giltigt beslut (ref.)", `<input value="${esc(s.giltigtBeslut)}" onchange="updateSystem('${s.id}','giltigtBeslut',this.value)">`)}
+                ${field("Central ackreditering", `<input type="date" value="${esc(s.centralAckrediteringsdatum)}" onchange="updateSystem('${s.id}','centralAckrediteringsdatum',this.value)">`)}
+                ${field("Lokal ackreditering", `<input type="date" value="${esc(s.lokalAckrediteringsdatum)}" onchange="updateSystem('${s.id}','lokalAckrediteringsdatum',this.value)">`)}
+              </div>
+              ${s.lokalAckrediteringsdatum && !s.centralAckrediteringsdatum ? `<div style="font-size:12px; background:#F4E3C8; color:#8A5A0F; padding:6px 10px; border-radius:4px; margin-bottom:10px;">Lokal ackreditering är registrerad utan central ackreditering. Enligt FM:s regelverk får lokal ackreditering inte ske innan central ackreditering skett — kontrollera ordningen.</div>` : ''}
+              ${field("Länk till underlag", `<input value="${esc(s.lank)}" onchange="updateSystem('${s.id}','lank',this.value)">`)}
+              ${field("Not (icke-känslig)", `<input value="${esc(s.not)}" onchange="updateSystem('${s.id}','not',this.value)">`)}
+
+              <h4 class="mini-title">Krav</h4>
+              <div class="grid3">
+                ${field("Uppfyllda", `<input type="number" value="${s.kravUppfyllda}" onchange="updateSystem('${s.id}','kravUppfyllda',Number(this.value))">`)}
+                ${field("Ej uppfyllda", `<input type="number" value="${s.kravEjUppfyllda}" onchange="updateSystem('${s.id}','kravEjUppfyllda',Number(this.value))">`)}
+                ${field("Under åtgärd", `<input type="number" value="${s.kravUnderAtgard}" onchange="updateSystem('${s.id}','kravUnderAtgard',Number(this.value))">`)}
+              </div>
+              <div class="grid2">
+                <div>
+                  <div class="field-label">Ej uppfyllda krav (kort beskrivning)</div>
+                  ${(s.kravEjUppfylldaLista||[]).map(item=>`<div style="font-size:12.5px; display:flex; justify-content:space-between; padding:3px 0;"><span>${esc(item.text)}</span><button class="btn-danger" onclick="removeKravItem('${s.id}','kravEjUppfylldaLista','${item.id}')">Ta bort</button></div>`).join('')}
+                  <div style="display:flex; gap:6px; margin-top:6px;"><input id="kel-${s.id}" placeholder="Lägg till…"><button class="btn-ghost" onclick="addKravItem('${s.id}','kravEjUppfylldaLista','kel-${s.id}')">Lägg till</button></div>
+                </div>
+                <div>
+                  <div class="field-label">Under åtgärd (kort beskrivning)</div>
+                  ${(s.kravUnderAtgardLista||[]).map(item=>`<div style="font-size:12.5px; display:flex; justify-content:space-between; padding:3px 0;"><span>${esc(item.text)}</span><button class="btn-danger" onclick="removeKravItem('${s.id}','kravUnderAtgardLista','${item.id}')">Ta bort</button></div>`).join('')}
+                  <div style="display:flex; gap:6px; margin-top:6px;"><input id="kua-${s.id}" placeholder="Lägg till…"><button class="btn-ghost" onclick="addKravItem('${s.id}','kravUnderAtgardLista','kua-${s.id}')">Lägg till</button></div>
+                </div>
+              </div>
+
+              <h4 class="mini-title">Risk</h4>
+              <div class="grid5">
+                ${field("Kritiska", `<input type="number" value="${s.riskKritiska}" onchange="updateSystem('${s.id}','riskKritiska',Number(this.value))">`)}
+                ${field("Höga", `<input type="number" value="${s.riskHoga}" onchange="updateSystem('${s.id}','riskHoga',Number(this.value))">`)}
+                ${field("Medel", `<input type="number" value="${s.riskMedel}" onchange="updateSystem('${s.id}','riskMedel',Number(this.value))">`)}
+                ${field("Låga", `<input type="number" value="${s.riskLaga}" onchange="updateSystem('${s.id}','riskLaga',Number(this.value))">`)}
+                ${field("Senaste riskbedömning", `<input type="date" value="${esc(s.senasteRiskbedomning)}" onchange="updateSystem('${s.id}','senasteRiskbedomning',this.value)">`)}
+              </div>
+
+              <div style="margin-top:6px; font-size:12.5px; color:#56666B;">
+                <strong style="color:#16262B;">Kontinuitet:</strong> plan ${esc(s.kontinuitetsplan)} — <button class="btn-link" onclick="setTab('continuity')">redigera i Kontinuitet →</button><br>
+                <strong style="color:#16262B;">Kopplade system:</strong> ${rel.length ? rel.map(r=>esc(r.namn)).join(', ') : 'inga registrerade'} — <button class="btn-link" onclick="setTab('graph')">hantera i Systemsamband →</button>
+              </div>
+            </td></tr>` : ''}`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+function updateRegisterFilter(v) {
+  UI.registerFilter = v; render();
+  const el = document.getElementById('register-search');
+  if (el) { el.focus(); const len = el.value.length; el.setSelectionRange(len,len); }
+}
+function toggleNewSystem() { UI.showNewSystem = !UI.showNewSystem; render(); }
+function toggleExpand(id) { UI.expanded = UI.expanded===id ? null : id; render(); }
+function addSystem() {
+  const namn = document.getElementById("ns-namn").value.trim();
+  if (!namn) return;
+  DB.systems.push(migrate({systems:[{
+    id: uid(), systemId: document.getElementById("ns-id").value || nextSystemId(), namn,
+    systemagare: document.getElementById("ns-agare").value,
+    forvaltare: document.getElementById("ns-forvaltare").value,
+    verksamhet: document.getElementById("ns-verksamhet").value,
+    sakerhetsskyddsklass: document.getElementById("ns-klass").value,
+    ackrediteringsniva: document.getElementById("ns-niva").value,
+    kritikalitet: document.getElementById("ns-kritikalitet").value,
+    ackrediteringsstatus: document.getElementById("ns-status").value,
+    portfoljstatus: document.getElementById("ns-portfolj").value,
+    senasteAckreditering: document.getElementById("ns-senast").value,
+    nastaOmprovning: document.getElementById("ns-nasta").value,
+    lank: document.getElementById("ns-lank").value,
+  }]}).systems[0]);
+  UI.showNewSystem = false;
+  save(); render();
+}
+function updateSystem(id, key, value) {
+  const s = sysById(id); if (!s) return;
+  s[key] = value; save(); render();
+}
+function addKravItem(sysId, listField, inputId) {
+  const el = document.getElementById(inputId);
+  const text = el.value.trim(); if (!text) return;
+  const s = sysById(sysId); if (!s) return;
+  s[listField] = s[listField] || [];
+  s[listField].push({id:uid(), text});
+  save(); render();
+}
+function removeKravItem(sysId, listField, itemId) {
+  const s = sysById(sysId); if (!s) return;
+  s[listField] = (s[listField]||[]).filter(i=>i.id!==itemId);
+  save(); render();
+}
+function removeSystem(id) {
+  DB.systems = DB.systems.filter(s => s.id !== id);
+  DB.connections = DB.connections.filter(c => c.fromId!==id && c.toId!==id);
+  DB.changes = DB.changes.filter(c => c.systemId !== id);
+  DB.activities = DB.activities.filter(a => a.systemId !== id);
+  save(); render();
+}
+
+// ---------------- Systemsamband (graf) ----------------
+function renderGraph() {
+  const nodes = DB.systems;
+  const n = nodes.length;
+  const cx=380, cy=250, R = n>1 ? 190 : 0;
+  const pos = {};
+  nodes.forEach((s,i) => { const angle = (2*Math.PI*i/Math.max(n,1)) - Math.PI/2; pos[s.id] = { x: cx + R*Math.cos(angle), y: cy + R*Math.sin(angle) }; });
+  const lines = DB.connections.map(c => {
+    const p1 = pos[c.fromId], p2 = pos[c.toId]; if (!p1 || !p2) return '';
+    return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${CONNECTION_COLORS[c.typ]||'#999'}" stroke-width="1.6" opacity="0.75"/>`;
+  }).join('');
+  const nodeColors = {"Låg":"#35564D","Medel":"#56666B","Hög":"#B4791F","Kritisk":"#9C3B2E"};
+  const circles = nodes.map(s => { const p = pos[s.id]; return `<g>
+      <circle cx="${p.x}" cy="${p.y}" r="26" fill="#fff" stroke="${nodeColors[s.kritikalitet]||'#999'}" stroke-width="2.4"/>
+      <text x="${p.x}" y="${p.y+4}" text-anchor="middle" font-size="9.5" font-family="IBM Plex Sans, sans-serif" fill="#16262B" font-weight="600">${esc((s.namn||'').slice(0,9))}</text>
+    </g>`; }).join('');
+  const options = DB.systems.map(s=>`<option value="${s.id}">${esc(s.namn)}</option>`).join('');
+
+  return `
+    ${sectionTitle("Systemsamband", "Registrera beroenden, integrationer och dataflöden mellan system — underlag för konsekvensanalys vid förändring.")}
+    <div class="card" style="padding:16px; margin-bottom:18px;">
+      <div class="grid3">
+        ${field("Från system", `<select id="nc-from">${options}</select>`)}
+        ${field("Typ av samband", `<select id="nc-typ">${CONNECTION_TYPES.map(t=>`<option>${esc(t)}</option>`).join('')}</select>`)}
+        ${field("Till system", `<select id="nc-to">${options}</select>`)}
+      </div>
+      <button class="btn" onclick="addConnection()">Lägg till samband</button>
+    </div>
+    ${nodes.length===0 ? `<div class="card" style="padding:18px; color:#56666B; font-size:13px;">Lägg till system i registret för att kunna visa samband.</div>` : `
+    <div class="card" style="padding:18px; margin-bottom:18px;">
+      <svg width="100%" viewBox="0 0 760 500" style="max-width:760px; display:block; margin:0 auto;">${lines}${circles}</svg>
+      <div class="graph-legend">${CONNECTION_TYPES.map(t=>`<div class="legend-item"><span class="legend-swatch" style="background:${CONNECTION_COLORS[t]};"></span>${esc(t)}</div>`).join('')}</div>
+    </div>`}
+    <div class="card" style="overflow:hidden;">
+      <table>
+        <thead><tr><th>Från</th><th>Typ</th><th>Till</th><th></th></tr></thead>
+        <tbody>
+          ${DB.connections.length===0 ? `<tr><td colspan="4" style="color:#56666B; padding:14px;">Inga samband registrerade ännu.</td></tr>` :
+          DB.connections.map(c => `<tr><td>${esc(sysById(c.fromId)?.namn||"—")}</td><td><span class="pill" style="background:#EAECE8; color:#3D4B4F;">${esc(c.typ)}</span></td><td>${esc(sysById(c.toId)?.namn||"—")}</td><td><button class="btn-danger" onclick="removeConnection('${c.id}')">Ta bort</button></td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+function addConnection() {
+  const fromId = document.getElementById("nc-from").value, toId = document.getElementById("nc-to").value, typ = document.getElementById("nc-typ").value;
+  if (!fromId || !toId || fromId===toId) { toast("Välj två olika system."); return; }
+  DB.connections.push({id: uid(), fromId, toId, typ}); save(); render();
+}
+function removeConnection(id) { DB.connections = DB.connections.filter(c=>c.id!==id); save(); render(); }
+
+// ---------------- Förändring & omackreditering ----------------
+// Håller Förändring & omackreditering ihop med Planering (årshjul + resurser + budget):
+// - "Ja" + datum          → skapar en Omackreditering-post i årshjulet
+// - "Möjligen" + datum    → skapar en Förberedelse-post (bedömningsarbete)
+// - "Nej", eller inget datum satt ännu → ingen automatisk post (syns istället i "Vad måste vi göra?")
+// Timmar och kostnad på förändringen förs över rakt av, så de räknas in i både
+// kapacitetsbelastning och budgetutnyttjande för det år aktiviteten hamnar i.
+function syncChangeActivity(change) {
+  DB.activities = DB.activities.filter(a => a.sourceChangeId !== change.id);
+  if ((change.paverkan === "Ja" || change.paverkan === "Möjligen") && change.planeradOmackreditering) {
+    const d = new Date(change.planeradOmackreditering);
+    if (!isNaN(d)) {
+      DB.activities.push({
+        id: uid(), sourceChangeId: change.id, systemId: change.systemId,
+        typ: change.paverkan === "Ja" ? "Omackreditering" : "Förberedelse",
+        manad: d.getMonth()+1, ar: d.getFullYear(),
+        ansvarig: change.ansvarig || (sysById(change.systemId)?.systemagare) || "",
+        timmar: Number(change.planeradTimmar)||0, kostnad: Number(change.planeradKostnad)||0,
+      });
+    }
+  }
+}
+function renderChanges() {
+  const options = DB.systems.map(s=>`<option value="${s.id}">${esc(s.namn)}</option>`).join('');
+  return `
+    ${sectionTitle("Förändring & omackreditering", "Registrera systemförändringar och bedöm om de påverkar ackrediteringen. Nej → vanlig förändring. Möjligen → sätt datum för bedömning, skapar automatiskt en Förberedelse-post i årshjulet. Ja → sätt datum för omackreditering, skapar automatiskt en Omackreditering-post — timmar och kostnad räknas in i resurs- och budgetplaneringen för det året.")}
+    <div class="card" style="padding:16px; margin-bottom:18px;">
+      <div class="grid4">
+        ${field("System", `<select id="nc2-system">${options}</select>`)}
+        ${field("Datum", `<input id="nc2-datum" type="date" value="${todayISO()}">`)}
+        ${field("Typ av ändring", `<select id="nc2-typ" onchange="renderChangeHint()">${ANDRINGSTYPER.map(t=>`<option value="${t.v}">${esc(t.l)}</option>`).join('')}</select>`)}
+        ${field("Ansvarig", `<input id="nc2-ansvarig" list="people-datalist">`)}
+      </div>
+      ${field("Beskrivning (icke-känslig)", `<input id="nc2-beskrivning" placeholder="Kort, ej känsligt innehåll">`)}
+      <div id="change-hint"></div>
+      <button class="btn" onclick="addChange()">Registrera förändring</button>
+    </div>
+    <div class="card" style="overflow:auto;">
+      <table>
+        <thead><tr><th>Datum</th><th>System</th><th>Beskrivning</th><th>Ackrediteringspåverkan</th><th id="pd-label">Planerat datum</th><th>Timmar</th><th>Kostnad (kr)</th><th>Status</th><th>Inplanerat</th><th></th></tr></thead>
+        <tbody>
+          ${[...DB.changes].sort((a,b)=> a.datum<b.datum?1:-1).map(c => {
+            const linked = DB.activities.some(a=>a.sourceChangeId===c.id);
+            const dateLabel = c.paverkan==="Ja" ? "omackreditering" : c.paverkan==="Möjligen" ? "bedömning" : "";
+            return `<tr>
+              <td>${fmt(c.datum)}</td>
+              <td>${esc(sysById(c.systemId)?.namn || "—")}</td>
+              <td>${esc(c.beskrivning)}</td>
+              <td><select style="width:auto;" onchange="updateChangeField('${c.id}','paverkan',this.value)">
+                ${PAVERKAN_OPTIONS.map(p=>`<option ${p===c.paverkan?'selected':''}>${esc(p)}</option>`).join('')}
+              </select></td>
+              <td style="width:150px;">${c.paverkan!=="Nej" ? `<input type="date" value="${esc(c.planeradOmackreditering)}" onchange="updateChangeField('${c.id}','planeradOmackreditering',this.value)" title="Planerad ${dateLabel}">` : '—'}</td>
+              <td style="width:65px;">${c.paverkan!=="Nej" ? `<input type="number" value="${c.planeradTimmar}" onchange="updateChangeField('${c.id}','planeradTimmar',Number(this.value))">` : '—'}</td>
+              <td style="width:85px;">${c.paverkan!=="Nej" ? `<input type="number" value="${c.planeradKostnad}" onchange="updateChangeField('${c.id}','planeradKostnad',Number(this.value))">` : '—'}</td>
+              <td><select style="width:auto;" onchange="updateChangeField('${c.id}','status',this.value)">
+                ${CHANGE_STATUS.map(st=>`<option ${st===c.status?'selected':''}>${esc(st)}</option>`).join('')}
+              </select></td>
+              <td>${c.paverkan==="Nej" ? '<span style="color:#8B9A95;">—</span>' : linked ? `<span style="color:#294238;">${icon('check',14)} i årshjulet</span>` : `<span style="color:#8A5A0F;">Sätt datum →</span>`}</td>
+              <td><button class="btn-danger" onclick="removeChange('${c.id}')">Ta bort</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+    <datalist id="people-datalist">${DB.people.map(p=>`<option value="${esc(p.namn)}">`).join('')}</datalist>
+  `;
+}
+function renderChangeHint() {
+  const typEl = document.getElementById("nc2-typ");
+  const t = ANDRINGSTYPER.find(x=>x.v===typEl.value);
+  const box = document.getElementById("change-hint");
+  box.innerHTML = t && t.vasentlig ? `<div style="font-size:12.5px; background:#F4E3C8; color:#8A5A0F; padding:7px 10px; border-radius:4px; margin:10px 0;">Denna ändringstyp brukar kunna påverka ackrediteringen — bedöm och sätt "Möjligen" eller "Ja" i tabellen nedan.</div>` : '';
+}
+function addChange() {
+  const systemId = document.getElementById("nc2-system").value;
+  const beskrivning = document.getElementById("nc2-beskrivning").value.trim();
+  if (!systemId || !beskrivning) return;
+  const change = {
+    id: uid(), systemId,
+    datum: document.getElementById("nc2-datum").value || todayISO(),
+    typ: document.getElementById("nc2-typ").value,
+    ansvarig: document.getElementById("nc2-ansvarig").value,
+    beskrivning, paverkan: "Nej", planeradOmackreditering: "", planeradTimmar: 0, planeradKostnad: 0, status: "Öppen",
+  };
+  DB.changes.push(change);
+  save(); render();
+}
+function updateChangeField(id, key, value) {
+  const c = DB.changes.find(x=>x.id===id); if (!c) return;
+  c[key] = value;
+  syncChangeActivity(c);
+  save(); render();
+}
+function removeChange(id) {
+  DB.activities = DB.activities.filter(a=>a.sourceChangeId!==id);
+  DB.changes = DB.changes.filter(c=>c.id!==id);
+  save(); render();
+}
+
+// ---------------- Ackrediteringsårshjul ----------------
+function renderWheel() {
+  const filtered = DB.activities.filter(a => a.ar === UI.year);
+  const sysOptions = `<option value="">Alla / ej systemspecifik</option>` + DB.systems.map(s=>`<option value="${s.id}">${esc(s.namn)}</option>`).join('');
+  const monthLoad = computeMonthLoad(UI.year);
+  const hours = filtered.reduce((s,a)=>s+(Number(a.timmar)||0),0);
+  const capacity = DB.people.reduce((s,p)=>s+(Number(p.kapacitet)||0),0) * 12;
+  const balance = capacity - hours;
+  const ram = getBudgetRam(UI.year), cost = totalCost(UI.year);
+  const typeCounts = {};
+  filtered.forEach(a => { typeCounts[a.typ] = (typeCounts[a.typ]||0)+1; });
+
+  return `
+    ${sectionTitle("Ackrediteringsårshjul " + UI.year, "Planerade aktiviteter över året. Poster märkta 'Auto' skapas automatiskt när en förändring bedöms kräva omackreditering.")}
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button class="btn-ghost" onclick="changeYear(-1)">← ${UI.year-1}</button>
+      <button class="btn-ghost" onclick="changeYear(1)">${UI.year+1} →</button>
+    </div>
+
+    <div class="card" style="padding:16px; margin-bottom:18px;">
+      <h3 class="card-title">Ackrediteringsarbete ${UI.year}</h3>
+      <div class="grid4">
+        ${statRow("Totalt planerade aktiviteter", filtered.length)}
+        ${statRow("Beräknad arbetsinsats", hours.toLocaleString("sv-SE")+" h")}
+        ${statRow("Tillgänglig kapacitet", capacity.toLocaleString("sv-SE")+" h")}
+        ${statRow(balance<0 ? "Underskott" : "Överskott", Math.abs(balance).toLocaleString("sv-SE")+" h", balance<0?'#9C3B2E':'#294238')}
+      </div>
+      <div class="grid4" style="margin-top:12px; padding-top:12px; border-top:1px solid #EAECE8;">
+        ${statRow("Budgetram "+UI.year, ram.toLocaleString("sv-SE")+" kr")}
+        ${statRow("Planerad kostnad", cost.toLocaleString("sv-SE")+" kr")}
+        ${statRow(ram-cost<0 ? "Överskrider budget" : "Återstår", Math.abs(ram-cost).toLocaleString("sv-SE")+" kr", ram-cost<0?'#9C3B2E':'#294238')}
+        <div><div class="field-label">&nbsp;</div><button class="btn-link" onclick="setTab('resources')">Justera budgetram i Resurser →</button></div>
+      </div>
+      <div style="font-size:12.5px; color:#56666B; margin-top:10px;">
+        ${Object.entries(typeCounts).map(([t,c])=>`${esc(t)}: ${c}`).join(' · ') || 'Inga aktiviteter inplanerade detta år.'}
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px; margin-bottom:20px;">
+      <div class="grid6">
+        ${field("System (valfritt)", `<select id="na-system">${sysOptions}</select>`)}
+        ${field("Typ", `<select id="na-typ">${AKTIVITETSTYPER.map(t=>`<option>${esc(t)}</option>`).join('')}</select>`)}
+        ${field("Månad", `<select id="na-manad">${MANADER.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('')}</select>`)}
+        ${field("Ansvarig", `<input id="na-ansvarig" list="people-datalist">`)}
+        ${field("Timmar", `<input id="na-timmar" type="number" value="8">`)}
+        ${field("Kostnad (kr)", `<input id="na-kostnad" type="number" value="0">`)}
+      </div>
+      <button class="btn" onclick="addActivity()">Lägg till aktivitet</button>
+      <datalist id="people-datalist">${DB.people.map(p=>`<option value="${esc(p.namn)}">`).join('')}</datalist>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+      ${MANADER.map((m,i) => {
+        const items = filtered.filter(a=>a.manad===i+1);
+        const overloadedNow = DB.people.filter(p => (monthLoad[p.namn]||[])[i] > p.kapacitet);
+        return `<div class="card month-card">
+          <div class="month-label" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>${m}</span>
+            ${overloadedNow.length ? `<span title="Överbelastning: ${overloadedNow.map(p=>esc(p.namn)).join(', ')}" style="color:#9C3B2E; font-size:11px;">${icon('alert',12)}</span>` : ''}
+          </div>
+          ${items.length===0 ? `<div style="font-size:12px; color:#B7C0BC;">—</div>` : items.map(a => `
+            <div style="font-size:12px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid #EAECE8;">
+              <div style="font-weight:500;">${esc(a.typ)}${a.sourceChangeId?' <span style="color:#B4791F; font-weight:400;">· Auto</span>':''}</div>
+              <div style="color:#56666B;">${a.systemId?esc(sysById(a.systemId)?.namn||'')+' · ':''}${esc(a.ansvarig)} · ${a.timmar} h</div>
+              ${a.sourceChangeId ? '' : `<button class="btn-danger" style="padding:0; margin-top:2px;" onclick="removeActivity('${a.id}')">Ta bort</button>`}
+            </div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+function statRow(label, value, color) {
+  return `<div><div class="field-label">${esc(label)}</div><div class="stat-value" style="${color?`color:${color};`:''}">${esc(value)}</div></div>`;
+}
+function changeYear(delta) { UI.year += delta; render(); }
+function addActivity() {
+  const ansvarig = document.getElementById("na-ansvarig").value.trim();
+  if (!ansvarig) return;
+  DB.activities.push({
+    id: uid(), systemId: document.getElementById("na-system").value || null,
+    typ: document.getElementById("na-typ").value, manad: Number(document.getElementById("na-manad").value), ar: UI.year, ansvarig,
+    timmar: Number(document.getElementById("na-timmar").value) || 0, kostnad: Number(document.getElementById("na-kostnad").value) || 0, sourceChangeId: null,
+  });
+  save(); render();
+}
+function removeActivity(id) { DB.activities = DB.activities.filter(a=>a.id!==id); save(); render(); }
+
+// ---------------- Kontinuitet ----------------
+function renderContinuity() {
+  return `
+    ${sectionTitle("Kontinuitet", "Kontinuitetsplanering per system — planstatus, återställningsmål (RTO/RPO), ansvarig och övningar.")}
+    <div class="card" style="overflow:auto;">
+      <table>
+        <thead><tr><th>System</th><th>Kritikalitet</th><th>Kontinuitetsplan</th><th>RTO (h)</th><th>RPO (h)</th><th>Ansvarig</th><th>Senaste övning</th><th>Nästa övning</th><th>Status</th></tr></thead>
+        <tbody>
+          ${DB.systems.map(s => {
+            let tone, text;
+            const overdue = s.nastaOvning && daysUntil(s.nastaOvning) < 0;
+            const critMissingPlan = (s.kritikalitet==="Hög"||s.kritikalitet==="Kritisk") && s.kontinuitetsplan!=="Ja";
+            if (critMissingPlan) { tone="crit"; text="Saknar plan"; }
+            else if (overdue) { tone="crit"; text="Övning försenad"; }
+            else if (s.nastaOvning && daysUntil(s.nastaOvning)<=30) { tone="warn"; text="Övning snart"; }
+            else { tone="ok"; text="OK"; }
+            const toneColors = {crit:["#F3DDD8","#9C3B2E"], warn:["#F4E3C8","#8A5A0F"], ok:["#DCE7E2","#294238"]};
+            const [bg,fg] = toneColors[tone];
+            return `<tr>
+              <td style="font-weight:600;">${esc(s.namn)}</td>
+              <td>${kritPill(s.kritikalitet)}</td>
+              <td><select style="width:auto;" onchange="updateSystem('${s.id}','kontinuitetsplan',this.value)">${KONTINUITETSSTATUS.map(k=>`<option ${k===s.kontinuitetsplan?'selected':''}>${esc(k)}</option>`).join('')}</select></td>
+              <td style="width:70px;"><input type="number" value="${esc(s.rto)}" onchange="updateSystem('${s.id}','rto',this.value)"></td>
+              <td style="width:70px;"><input type="number" value="${esc(s.rpo)}" onchange="updateSystem('${s.id}','rpo',this.value)"></td>
+              <td style="width:120px;"><input value="${esc(s.kontinuitetsansvarig)}" onchange="updateSystem('${s.id}','kontinuitetsansvarig',this.value)"></td>
+              <td style="width:140px;"><input type="date" value="${esc(s.senasteOvning)}" onchange="updateSystem('${s.id}','senasteOvning',this.value)"></td>
+              <td style="width:140px;"><input type="date" value="${esc(s.nastaOvning)}" onchange="updateSystem('${s.id}','nastaOvning',this.value)"></td>
+              <td><span class="pill" style="background:${bg}; color:${fg};">${text}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ---------------- Resurser & budget ----------------
+function renderResources() {
+  const monthLoad = computeMonthLoad(UI.year);
+  const ram = getBudgetRam(UI.year), tCost = totalCost(UI.year);
+  return `
+    ${sectionTitle("Resurser & budget", "Planerad kapacitet per person (h/månad) jämförd mot inplanerade aktiviteter i " + UI.year + ", samt budgetram för samma år. Samma årsval som Ackrediteringsårshjulet.")}
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button class="btn-ghost" onclick="changeYear(-1)">← ${UI.year-1}</button>
+      <button class="btn-ghost" onclick="changeYear(1)">${UI.year+1} →</button>
+    </div>
+    <div class="card" style="padding:16px; margin-bottom:22px; max-width:420px;">
+      <div style="font-size:13px; font-weight:600; margin-bottom:10px;">Budgetram ${UI.year}</div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <input id="budget-ram" type="number" value="${ram}" onchange="updateBudget(this.value)"><span style="font-size:12px; color:#56666B; white-space:nowrap;">kr</span>
+      </div>
+      <div style="margin-top:10px; font-size:13px;">
+        Planerad kostnad ${UI.year}: <strong>${tCost.toLocaleString("sv-SE")} kr</strong> · Återstår:
+        <strong style="color:${ram-tCost<0?'#9C3B2E':'#294238'};">${(ram-tCost).toLocaleString("sv-SE")} kr</strong>
+      </div>
+      <div style="font-size:11.5px; color:#8B9A95; margin-top:8px;">Planerad kostnad hämtas från aktiviteter i Ackrediteringsårshjulet för ${UI.year}, inklusive poster som skapats automatiskt från Förändring &amp; omackreditering.</div>
+    </div>
+    <div style="display:flex; gap:10px; margin-bottom:14px; align-items:flex-end;">
+      ${field("Namn", `<input id="np-namn">`)}
+      ${field("Kapacitet h/månad", `<input id="np-kap" type="number" value="10">`)}
+      <button class="btn" onclick="addPerson()">Lägg till person</button>
+    </div>
+    <div class="card" style="overflow:auto;">
+      <table>
+        <thead><tr><th>Person</th><th>Kapacitet/mån</th>${MANADER.map(m=>`<th>${m}</th>`).join('')}<th></th></tr></thead>
+        <tbody>
+          ${DB.people.map(p => { const load = monthLoad[p.namn] || Array(12).fill(0); return `<tr>
+              <td style="font-weight:600;">${esc(p.namn)}</td>
+              <td style="width:90px;"><input type="number" value="${p.kapacitet}" onchange="updatePersonCap('${p.id}',this.value)"></td>
+              ${load.map(h => `<td style="color:${h>p.kapacitet?'#9C3B2E':'#16262B'}; font-weight:${h>p.kapacitet?600:400};">${h>0?h:'—'}</td>`).join('')}
+              <td><button class="btn-danger" onclick="removePerson('${p.id}')">Ta bort</button></td>
+            </tr>`; }).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:12px; color:#56666B; margin-top:8px;">Röd, fetstil markerar månad där planerad belastning överstiger kapacitet.</div>
+  `;
+}
+function updateBudget(v) { setBudgetRam(UI.year, v); save(); render(); }
+function addPerson() { const namn = document.getElementById("np-namn").value.trim(); if (!namn) return;
+  DB.people.push({id: uid(), namn, kapacitet: Number(document.getElementById("np-kap").value)||0}); save(); render(); }
+function updatePersonCap(id, v) { const p = DB.people.find(x=>x.id===id); if (!p) return; p.kapacitet = Number(v)||0; save(); render(); }
+function removePerson(id) { DB.people = DB.people.filter(p=>p.id!==id); save(); render(); }
+
+// ---------------- Export & backup ----------------
+function renderExport() {
+  return `
+    ${sectionTitle("Export & backup", "Rapporter för ledning och tillsyn, Excel-kompatibla exporter, samt fullständig säkerhetskopia.")}
+    <div class="grid3" style="max-width:920px;">
+      <div class="card" style="padding:16px;">
+        <h3 class="card-title">Executive report</h3>
+        <div style="font-size:12.5px; color:#56666B; margin-bottom:10px;">Formaterad översiktsrapport för ledning — öppna i webbläsare och skriv ut till PDF vid behov.</div>
+        <button class="btn-ghost" onclick="exportExecutiveReport()">Ladda ner executive report (.html)</button>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h3 class="card-title">Excel</h3>
+        <div style="font-size:12.5px; color:#56666B; margin-bottom:10px;">Semikolonseparerad CSV, öppnas direkt i Excel (svensk regioninställning).</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn-ghost" onclick="exportSystemsCSV()">Systemöversikt (.csv)</button>
+          <button class="btn-ghost" onclick="exportChangesCSV()">Förändringar (.csv)</button>
+        </div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h3 class="card-title">Säkerhetskopia</h3>
+        <div style="font-size:12.5px; color:#56666B; margin-bottom:10px;">Fullständig backup av allt innehåll som JSON.</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn-ghost" onclick="exportBackupJSON()">Exportera (.json)</button>
+          <button class="btn-ghost" onclick="triggerImport()">Importera (.json)</button>
+          <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(this)">
+        </div>
+      </div>
+    </div>
+  `;
+}
+function downloadFile(filename, text, mime) {
+  const blob = new Blob([text], {type:(mime||"text/plain")+";charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function csvOf(rows, headers) {
+  const e = v => `"${String(v??"").replace(/"/g,'""')}"`;
+  return [headers.join(";"), ...rows.map(r => headers.map(h=>e(r[h])).join(";"))].join("\\n");
+}
+function exportSystemsCSV() {
+  downloadFile("systemoversikt.csv", csvOf(DB.systems.map(s=>{
+    const nc = nextChangeForSystem(s.id);
+    const riskTotal = (Number(s.riskKritiska)||0)+(Number(s.riskHoga)||0)+(Number(s.riskMedel)||0)+(Number(s.riskLaga)||0);
+    return { SystemID:s.systemId, Namn:s.namn, Ägare:s.systemagare, Status:s.portfoljstatus, Ackrediteringsstatus:s.ackrediteringsstatus,
+      SenastAckrediterad:fmt(s.senasteAckreditering), NästaOmprövning:fmt(s.nastaOmprovning),
+      KravOK:s.kravUppfyllda, KravEjOK:s.kravEjUppfyllda, Risker:riskTotal,
+      PlaneradFörändring: nc ? nc.beskrivning : "", Omackreditering: changeFlagForSystem(s.id)==="ja"?"Ja":changeFlagForSystem(s.id)==="bedom"?"Bedöm":"Nej" };
+  }), ["SystemID","Namn","Ägare","Status","Ackrediteringsstatus","SenastAckrediterad","NästaOmprövning","KravOK","KravEjOK","Risker","PlaneradFörändring","Omackreditering"]));
+}
+function exportChangesCSV() {
+  downloadFile("forandringar.csv", csvOf(DB.changes.map(c=>({
+    Datum:fmt(c.datum), System:sysById(c.systemId)?.namn, Beskrivning:c.beskrivning, Ansvarig:c.ansvarig,
+    Ackrediteringspåverkan:c.paverkan, PlaneradOmackreditering:fmt(c.planeradOmackreditering), Status:c.status
+  })), ["Datum","System","Beskrivning","Ansvarig","Ackrediteringspåverkan","PlaneradOmackreditering","Status"]));
+}
+function exportBackupJSON() { downloadFile("systemtillsyn-backup.json", JSON.stringify(DB, null, 2), "application/json"); }
+function triggerImport() { document.getElementById("import-file-input").click(); }
+function handleImportFile(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try { const data = JSON.parse(e.target.result); if (!data.systems) throw new Error("ogiltigt format");
+      DB = migrate(data); save(); render(); toast("Säkerhetskopia importerad.");
+    } catch(err) { toast("Kunde inte läsa filen — kontrollera att det är en giltig säkerhetskopia."); }
+  };
+  reader.readAsText(file); input.value = "";
+}
+function exportExecutiveReport() {
+  const thisYear = new Date().getFullYear();
+  const portfolio = aggregatePortfolio(); const ackred = aggregateAckreditering(); const krav = aggregateKrav(); const risk = aggregateRisk(); const forand = aggregateForandringar();
+  const ram = getBudgetRam(thisYear), cost = totalCost(thisYear);
+  const capacityPct = avgCapacityUtil(computeMonthLoad(thisYear));
+  const todo = buildTodoList().slice(0,10);
+  const rows = DB.systems.map(s => {
+    const nc = nextChangeForSystem(s.id);
+    const riskTotal = (Number(s.riskKritiska)||0)+(Number(s.riskHoga)||0)+(Number(s.riskMedel)||0)+(Number(s.riskLaga)||0);
+    return `<tr><td>${esc(s.namn)}</td><td>${esc(s.systemagare)}</td><td>${esc(s.portfoljstatus)}</td><td>${fmt(s.senasteAckreditering)}</td><td>${fmt(s.nastaOmprovning)}</td><td>${s.kravUppfyllda}</td><td>${s.kravEjUppfyllda}</td><td>${riskTotal}</td><td>${nc?esc(nc.beskrivning):'—'}</td><td>${changeFlagForSystem(s.id)==="ja"?"Ja":changeFlagForSystem(s.id)==="bedom"?"Bedöm":"Nej"}</td></tr>`;
+  }).join('');
+  const html = `<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Executive report — Systemportfölj</title>
+  <style>
+    body{font-family:Georgia,'Times New Roman',serif; color:#16262B; max-width:960px; margin:40px auto; padding:0 20px;}
+    h1{font-size:24px; border-bottom:2px solid #16262B; padding-bottom:10px;}
+    h2{font-size:16px; margin-top:32px;}
+    table{border-collapse:collapse; width:100%; font-family:Arial,sans-serif; font-size:12.5px;}
+    th,td{border:1px solid #ccc; padding:6px 8px; text-align:left;}
+    th{background:#F1F3F0;}
+    .meta{color:#56666B; font-size:12px; margin-bottom:20px;}
+    .stats{display:flex; gap:24px; flex-wrap:wrap; font-family:Arial,sans-serif;}
+    .stat{border:1px solid #ccc; border-radius:6px; padding:10px 16px; min-width:140px;}
+    .stat .n{font-size:22px; font-weight:bold;}
+    ul{font-family:Arial,sans-serif; font-size:13px;}
+    @media print { body{margin:0;} }
+  </style></head><body>
+  <h1>Executive report — Systemportfölj</h1>
+  <div class="meta">Genererad ${fmt(todayISO())} · ${DB.systems.length} system i registret</div>
+
+  <h2>Systemportfölj</h2>
+  <div class="stats">
+    <div class="stat"><div class="n">${portfolio["Grön – Drift"]}</div>Drift</div>
+    <div class="stat"><div class="n">${portfolio["Gul – Åtgärd"]}</div>Under åtgärd</div>
+    <div class="stat"><div class="n">${portfolio["Röd – Problem"]}</div>Problem</div>
+  </div>
+
+  <h2>Ackreditering</h2>
+  <div class="stats">
+    <div class="stat"><div class="n">${ackred.giltig}</div>Giltig</div>
+    <div class="stat"><div class="n">${ackred.nasta90}</div>Nästa 90 dagar</div>
+    <div class="stat"><div class="n">${ackred.forsenad}</div>Försenad</div>
+    <div class="stat"><div class="n">${ackred.potentiell}</div>Potentiell omackreditering</div>
+  </div>
+
+  <h2>Krav &amp; risk</h2>
+  <div class="stats">
+    <div class="stat"><div class="n">${krav.ok}</div>Krav uppfyllda</div>
+    <div class="stat"><div class="n">${krav.ej}</div>Krav ej uppfyllda</div>
+    <div class="stat"><div class="n">${risk.krit+risk.hog}</div>Höga/kritiska risker</div>
+    <div class="stat"><div class="n">${forand.total}</div>Kommande förändringar</div>
+  </div>
+
+  <h2>Resurser &amp; budget ${thisYear}</h2>
+  <div class="stats">
+    <div class="stat"><div class="n">${cost.toLocaleString("sv-SE")} kr</div>Planerad kostnad</div>
+    <div class="stat"><div class="n">${ram.toLocaleString("sv-SE")} kr</div>Budgetram</div>
+    <div class="stat"><div class="n">${(ram-cost).toLocaleString("sv-SE")} kr</div>${ram-cost<0?'Överskrider budget':'Återstår'}</div>
+    <div class="stat"><div class="n">${capacityPct}%</div>Kapacitetsbelastning (högst belastad månad)</div>
+  </div>
+
+  <h2>Vad kräver ledningens uppmärksamhet</h2>
+  <ul>${todo.map(t=>`<li>${t.text}</li>`).join('') || '<li>Inget brådskande just nu.</li>'}</ul>
+
+  <h2>Systemöversikt</h2>
+  <table><thead><tr><th>System</th><th>Ägare</th><th>Status</th><th>Senast ackrediterad</th><th>Nästa ackreditering</th><th>Krav OK</th><th>Krav ej OK</th><th>Risker</th><th>Planerad förändring</th><th>Omackreditering</th></tr></thead><tbody>${rows}</tbody></table>
+
+  <p style="font-size:11px; color:#8B9A95; margin-top:30px;">Rapporten innehåller endast icke-känslig metadata. Underlag och riskdetaljer finns i externt dokumentlager.</p>
+  </body></html>`;
+  downloadFile("executive-report.html", html, "text/html");
+}
+
+// ---------------- Navigation ----------------
+function setTab(tab) { UI.tab = tab; UI.showNewSystem = false; UI.expanded = null; render(); }
+
+// ---------------- Init ----------------
+render();
+</script>
+</body>
+</html>
