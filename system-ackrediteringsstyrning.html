@@ -149,7 +149,7 @@ function seed() {
      kravUppfyllda:97, kravEjUppfyllda:3, kravUnderAtgard:2,
      kravEjUppfylldaLista:[{id:uid(),text:"Loggning av administratörsåtgärder"},{id:uid(),text:"Separering av testmiljö"},{id:uid(),text:"Uppdaterad säkerhetsskyddsplan"}],
      kravUnderAtgardLista:[{id:uid(),text:"Multifaktorautentisering för fjärråtkomst"},{id:uid(),text:"Härdning av databasserver"}],
-     riskKritiska:0, riskHoga:2, riskMedel:4, riskLaga:8, senasteRiskbedomning:`${y}-05-14`},
+     riskKritiska:0, riskHoga:2, riskMedel:4, riskLaga:8, riskAccepterade:5, riskMedvetna:6, senasteRiskbedomning:`${y}-05-14`},
 
     {id:uid(), systemId:"SYS-0002", namn:"LOG-PORTAL", systemagare:"S. Berg", produktagare:"S. Berg", forvaltare:"S. Berg",
      verksamhet:"Logistik", informationsklass:"Intern", sakerhetsskyddsklass:"Klass 4 – Begränsat hemlig", ackrediteringsniva:"Lokal",
@@ -159,7 +159,7 @@ function seed() {
      centralAckrediteringsdatum:"", lokalAckrediteringsdatum:`${y-1}-09-01`,
      kontinuitetsplan:"Under framtagande", rto:"24", rpo:"12", kontinuitetsansvarig:"S. Berg", senasteOvning:"", nastaOvning:`${y}-10-15`,
      kravUppfyllda:100, kravEjUppfyllda:0, kravUnderAtgard:0, kravEjUppfylldaLista:[], kravUnderAtgardLista:[],
-     riskKritiska:0, riskHoga:0, riskMedel:1, riskLaga:3, senasteRiskbedomning:`${y}-04-02`},
+     riskKritiska:0, riskHoga:0, riskMedel:1, riskLaga:3, riskAccepterade:2, riskMedvetna:3, senasteRiskbedomning:`${y}-04-02`},
 
     {id:uid(), systemId:"SYS-0003", namn:"PLAN-ÖST", systemagare:"K. Nyström", produktagare:"K. Nyström", forvaltare:"A. Sund",
      verksamhet:"Planering", informationsklass:"Känslig", sakerhetsskyddsklass:"Klass 3 – Konfidentiell", ackrediteringsniva:"Central",
@@ -171,19 +171,19 @@ function seed() {
      kravUppfyllda:91, kravEjUppfyllda:9, kravUnderAtgard:5,
      kravEjUppfylldaLista:[{id:uid(),text:"Riskbedömning av ny integration"},{id:uid(),text:"Behörighetsmodell ej fastställd"}],
      kravUnderAtgardLista:[{id:uid(),text:"Säkerhetsskyddsavtal med leverantör"}],
-     riskKritiska:0, riskHoga:3, riskMedel:2, riskLaga:0, senasteRiskbedomning:`${y}-06-01`},
+     riskKritiska:0, riskHoga:3, riskMedel:2, riskLaga:0, riskAccepterade:1, riskMedvetna:3, senasteRiskbedomning:`${y}-06-01`},
 
-    {id:uid(), systemId:"SYS-0004", namn:"FALT-KOMM", systemagare:"P. Ek", produktagare:"P. Ek", forvaltare:"P. Ek",
-     verksamhet:"Fältkommunikation", informationsklass:"Skyddsvärd", sakerhetsskyddsklass:"Klass 2 – Hemlig", ackrediteringsniva:"Central",
+    {id:uid(), systemId:"SYS-0004", namn:"FALT-KOMM", systemagare:"Stina Nilsson", produktagare:"Stina Nilsson", forvaltare:"Richard Boström",
+     verksamhet:"RC-bilar", informationsklass:"Skyddsvärd", sakerhetsskyddsklass:"Klass 2 – Hemlig", ackrediteringsniva:"Central",
      ackrediteringsstatus:"Villkorad ackreditering", senasteAckreditering:`${y-1}-06-01`, giltigtBeslut:"FMV Dnr 2024-887", nastaOmprovning:`${y}-01-20`,
      kritikalitet:"Kritisk", livscykelfas:"Förändring pågår", portfoljstatus:"Röd – Problem",
      leverantor:"Försvarsindustri X", driftsmiljo:"On-premises", lank:"https://internt-dokumentlager/exempel/falt-komm", not:"Villkor kopplade till åtgärdsplan",
      centralAckrediteringsdatum:"", lokalAckrediteringsdatum:`${y-1}-06-15`,
-     kontinuitetsplan:"Nej", rto:"2", rpo:"0.5", kontinuitetsansvarig:"P. Ek", senasteOvning:"", nastaOvning:"",
+     kontinuitetsplan:"Nej", rto:"2", rpo:"0.5", kontinuitetsansvarig:"Richard Boström", senasteOvning:"", nastaOvning:"",
      kravUppfyllda:82, kravEjUppfyllda:18, kravUnderAtgard:6,
      kravEjUppfylldaLista:[{id:uid(),text:"Kryptering av lagringsmedia"},{id:uid(),text:"Fysiskt skalskydd i fält"},{id:uid(),text:"Reservkraftlösning"}],
      kravUnderAtgardLista:[{id:uid(),text:"Ny nyckelhanteringsrutin"}],
-     riskKritiska:1, riskHoga:6, riskMedel:5, riskLaga:2, senasteRiskbedomning:`${y}-07-22`},
+     riskKritiska:1, riskHoga:6, riskMedel:5, riskLaga:2, riskAccepterade:3, riskMedvetna:4, senasteRiskbedomning:`${y}-07-22`},
   ];
   const [a,b,c,d] = systems.map(s => s.id);
   return {
@@ -196,7 +196,7 @@ function seed() {
       {id:uid(), systemId:a, datum:`${y}-06-02`, typ:"hotbild", beskrivning:"Förändrad hotbild enligt underrättelse (ref. extern)", ansvarig:"M. Ahlgren", paverkan:"Ja", planeradOmackreditering:`${y}-12-10`, planeradTimmar:40, planeradKostnad:25000, status:"Bedömd"},
       {id:uid(), systemId:b, datum:`${y}-07-18`, typ:"mjukvara", beskrivning:"Uppgradering av plattformsversion", ansvarig:"S. Berg", paverkan:"Nej", planeradOmackreditering:"", planeradTimmar:0, planeradKostnad:0, status:"Bedömd"},
       {id:uid(), systemId:c, datum:`${y}-09-05`, typ:"integration", beskrivning:"Ny integration mot LEDSYS-A", ansvarig:"K. Nyström", paverkan:"Möjligen", planeradOmackreditering:`${y}-10-01`, planeradTimmar:12, planeradKostnad:0, status:"Öppen"},
-      {id:uid(), systemId:d, datum:`${y+1}-02-01`, typ:"driftmiljo", beskrivning:"Större ombyggnad av kommunikationsnod", ansvarig:"P. Ek", paverkan:"Ja", planeradOmackreditering:`${y+1}-03-01`, planeradTimmar:60, planeradKostnad:90000, status:"Öppen"},
+      {id:uid(), systemId:d, datum:`${y+1}-02-01`, typ:"driftmiljo", beskrivning:"Större ombyggnad av kommunikationsnod", ansvarig:"Richard Boström", paverkan:"Ja", planeradOmackreditering:`${y+1}-03-01`, planeradTimmar:60, planeradKostnad:90000, status:"Öppen"},
     ],
     activities: [
       {id:uid(), systemId:a, typ:"Uppföljning/Omprövning", manad:3, ar:y, ansvarig:"M. Ahlgren", timmar:16, kostnad:0, sourceChangeId:null},
@@ -208,7 +208,8 @@ function seed() {
       {id:uid(), namn:"M. Ahlgren", kapacitet:20},
       {id:uid(), namn:"S. Berg", kapacitet:15},
       {id:uid(), namn:"K. Nyström", kapacitet:25},
-      {id:uid(), namn:"P. Ek", kapacitet:18},
+      {id:uid(), namn:"Richard Boström", kapacitet:18},
+      {id:uid(), namn:"Stina Nilsson", kapacitet:15},
     ],
     budgetRam: { [y]: 320000, [y+1]: 280000 },
   };
@@ -226,7 +227,7 @@ function migrate(data) {
     centralAckrediteringsdatum:"", lokalAckrediteringsdatum:"",
     kontinuitetsplan:"Nej", rto:"", rpo:"", kontinuitetsansvarig:"", senasteOvning:"", nastaOvning:"",
     kravUppfyllda:0, kravEjUppfyllda:0, kravUnderAtgard:0, kravEjUppfylldaLista:[], kravUnderAtgardLista:[],
-    riskKritiska:0, riskHoga:0, riskMedel:0, riskLaga:0, senasteRiskbedomning:"",
+    riskKritiska:0, riskHoga:0, riskMedel:0, riskLaga:0, riskAccepterade:0, riskMedvetna:0, senasteRiskbedomning:"",
   }, s));
   d.connections = d.connections || [];
   d.changes = (d.changes||[]).map(c => Object.assign({id:uid(), systemId:"", datum:"", typ:"annat", beskrivning:"", ansvarig:"", paverkan:"Nej", planeradOmackreditering:"", planeradTimmar:0, planeradKostnad:0, status:"Öppen"}, c));
@@ -243,8 +244,13 @@ try {
 
 let UI = { tab: "dashboard", year: new Date().getFullYear(), showNewSystem: false, expanded: null, registerFilter: "" };
 
+let lastSavedAt = null;
 function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+    lastSavedAt = new Date();
+    toast("Sparat ✓ " + lastSavedAt.toLocaleTimeString("sv-SE"));
+  }
   catch(e) { toast("Kunde inte spara — lokal lagring otillgänglig."); }
 }
 function toast(msg) {
@@ -312,7 +318,11 @@ function aggregateKrav() {
   return DB.systems.reduce((acc,s)=>{ acc.ok += Number(s.kravUppfyllda)||0; acc.ej += Number(s.kravEjUppfyllda)||0; acc.atgard += Number(s.kravUnderAtgard)||0; return acc; }, {ok:0, ej:0, atgard:0});
 }
 function aggregateRisk() {
-  return DB.systems.reduce((acc,s)=>{ acc.krit+=Number(s.riskKritiska)||0; acc.hog+=Number(s.riskHoga)||0; acc.med+=Number(s.riskMedel)||0; acc.lag+=Number(s.riskLaga)||0; return acc; }, {krit:0,hog:0,med:0,lag:0});
+  return DB.systems.reduce((acc,s)=>{
+    acc.krit+=Number(s.riskKritiska)||0; acc.hog+=Number(s.riskHoga)||0; acc.med+=Number(s.riskMedel)||0; acc.lag+=Number(s.riskLaga)||0;
+    acc.accepterade+=Number(s.riskAccepterade)||0; acc.medvetna+=Number(s.riskMedvetna)||0;
+    return acc;
+  }, {krit:0,hog:0,med:0,lag:0,accepterade:0,medvetna:0});
 }
 function aggregateForandringar() {
   const kommande = DB.changes.filter(c=>c.datum && c.datum>=todayISO());
@@ -330,7 +340,10 @@ function buildTodoList() {
     }
     if ((s.kravEjUppfyllda||0) > 0) items.push({tone: s.kravEjUppfyllda>=10?'crit':'warn', text:`${s.namn} – ${s.kravEjUppfyllda} ej uppfyllda krav`, sort:500});
     const riskSum = (Number(s.riskKritiska)||0) + (Number(s.riskHoga)||0);
+    const riskHandled = Number(s.riskMedvetna)||0;
+    const riskTotal = riskSum + (Number(s.riskMedel)||0) + (Number(s.riskLaga)||0);
     if (riskSum > 0) items.push({tone: s.riskKritiska>0?'crit':'warn', text:`${s.namn} – ${riskSum} höga/kritiska risker`, sort:520});
+    if (riskTotal > 0 && riskHandled < riskTotal) items.push({tone: s.riskKritiska>0?'crit':'warn', text:`${s.namn} – ${riskTotal-riskHandled} risker varken accepterade eller bevakade som medvetna`, sort:530});
     if (s.lokalAckrediteringsdatum && !s.centralAckrediteringsdatum) items.push({tone:'warn', text:`${s.namn} – lokal ackreditering registrerad utan central ackreditering, kontrollera ordningen`, sort:400});
   });
   DB.changes.forEach(c => {
@@ -387,6 +400,7 @@ function render() {
         </div>
         <div style="margin-top:10px; font-size:10.5px; color:#B7C0BC; line-height:1.5;">Regelverksnotering: FFS 2025:3 gäller från 2026-07-01 — stäm av era rutiner mot gällande föreskrift.</div>
         <div style="margin-top:10px; font-size:10.5px; color:#B7C0BC;">Data sparas lokalt i denna webbläsare (localStorage).</div>
+        <div style="margin-top:4px; font-size:10.5px; color:${lastSavedAt?'#5C8A73':'#B7C0BC'};">${lastSavedAt ? 'Senast sparat: '+lastSavedAt.toLocaleTimeString('sv-SE') : 'Inget sparat ännu i den här sessionen.'}</div>
       </aside>
       <main id="main">${renderTab(todo)}</main>
     </div>
@@ -431,6 +445,11 @@ function kritPill(k) {
   const map = {"Låg":["#DCE7E2","#294238"], "Medel":["#E4E9EC","#3D4B4F"], "Hög":["#F4E3C8","#8A5A0F"], "Kritisk":["#F3DDD8","#9C3B2E"]};
   const [bg,fg] = map[k]||["#eee","#333"];
   return `<span class="pill" style="background:${bg}; color:${fg};">${esc(k||"—")}</span>`;
+}
+function kritSelect(id, value) {
+  const map = {"Låg":["#DCE7E2","#294238"], "Medel":["#E4E9EC","#3D4B4F"], "Hög":["#F4E3C8","#8A5A0F"], "Kritisk":["#F3DDD8","#9C3B2E"]};
+  const [bg,fg] = map[value]||["#fff","#16262B"];
+  return `<select style="width:auto; background:${bg}; color:${fg}; border-color:${bg}; font-weight:500;" onchange="updateSystem('${id}','kritikalitet',this.value)">${KRITIKALITETER.map(k=>`<option ${k===value?'selected':''}>${esc(k)}</option>`).join('')}</select>`;
 }
 function dot(color) { return `<span class="dot" style="color:${color};">●</span>`; }
 function portfoljDotLabel(status) {
@@ -505,6 +524,8 @@ function renderDashboard(todo) {
         {color:'#E07A3F', label:'Höga', value: risk.hog},
         {color:'#D9A227', label:'Medel', value: risk.med},
         {color:'#3AA876', label:'Låga', value: risk.lag},
+        {color:'#56666B', label:'— Medvetna/bevakade (tot. kända)', value: risk.medvetna},
+        {color:'#8A5A0F', label:'— varav accepterade', value: risk.accepterade},
       ])}
       ${statCard("Kommande förändringar", [
         {color:'#56666B', label:'Totalt', value: forand.total},
@@ -593,16 +614,19 @@ function renderRegister() {
             const isOpen = UI.expanded === s.id;
             const rel = relatedSystems(s.id);
             return `<tr class="datarow">
-              <td style="width:24px;"><button class="btn-link" onclick="toggleExpand('${s.id}')" style="text-decoration:none;">${icon('chevron', 14)}</button></td>
-              <td style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#56666B;">${esc(s.systemId)}</td>
-              <td style="font-weight:600; cursor:pointer;" onclick="toggleExpand('${s.id}')">${esc(s.namn)}</td>
-              <td>${esc(s.systemagare)}</td>
-              <td>${esc(s.sakerhetsskyddsklass)}</td>
-              <td>${kritPill(s.kritikalitet)}</td>
+              <td style="width:24px;"><button class="btn-link" onclick="toggleExpand('${s.id}')" style="text-decoration:none;" title="Visa fler fält">${icon('chevron', 14)}</button></td>
+              <td style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#56666B; white-space:nowrap;">${esc(s.systemId)}</td>
+              <td style="min-width:130px;"><input value="${esc(s.namn)}" style="font-weight:600;" onchange="updateSystem('${s.id}','namn',this.value)"></td>
+              <td style="min-width:110px;"><input value="${esc(s.systemagare)}" onchange="updateSystem('${s.id}','systemagare',this.value)"></td>
+              <td style="min-width:170px;"><select onchange="updateSystem('${s.id}','sakerhetsskyddsklass',this.value)">${KLASSER.map(k=>`<option ${k===s.sakerhetsskyddsklass?'selected':''}>${esc(k)}</option>`).join('')}</select></td>
+              <td style="min-width:90px;">${kritSelect(s.id, s.kritikalitet)}</td>
               <td><select style="width:auto;" onchange="updateSystem('${s.id}','ackrediteringsstatus',this.value)">
                 ${STATUSAR.map(st=>`<option ${st===s.ackrediteringsstatus?'selected':''}>${esc(st)}</option>`).join('')}
               </select></td>
-              <td style="color:${color};">${fmt(s.nastaOmprovning)}${d!==null && d<0 ? ' (försenad)' : ''}</td>
+              <td style="min-width:130px;">
+                <input type="date" value="${esc(s.nastaOmprovning)}" onchange="updateSystem('${s.id}','nastaOmprovning',this.value)">
+                ${d!==null && d<0 ? `<div style="color:${color}; font-size:11px; margin-top:2px;">Försenad</div>` : ''}
+              </td>
               <td><button class="btn-danger" onclick="removeSystem('${s.id}')">Ta bort</button></td>
             </tr>
             ${isOpen ? `<tr class="detailrow"><td colspan="9">
@@ -650,14 +674,28 @@ function renderRegister() {
                 </div>
               </div>
 
-              <h4 class="mini-title">Risk</h4>
-              <div class="grid5">
+              <h4 class="mini-title">Risk — allvarlighetsgrad</h4>
+              <div class="grid4">
                 ${field("Kritiska", `<input type="number" value="${s.riskKritiska}" onchange="updateSystem('${s.id}','riskKritiska',Number(this.value))">`)}
                 ${field("Höga", `<input type="number" value="${s.riskHoga}" onchange="updateSystem('${s.id}','riskHoga',Number(this.value))">`)}
                 ${field("Medel", `<input type="number" value="${s.riskMedel}" onchange="updateSystem('${s.id}','riskMedel',Number(this.value))">`)}
                 ${field("Låga", `<input type="number" value="${s.riskLaga}" onchange="updateSystem('${s.id}','riskLaga',Number(this.value))">`)}
-                ${field("Senaste riskbedömning", `<input type="date" value="${esc(s.senasteRiskbedomning)}" onchange="updateSystem('${s.id}','senasteRiskbedomning',this.value)">`)}
               </div>
+              <h4 class="mini-title">Risk — hanteringsstatus</h4>
+              ${(() => {
+                const total = (Number(s.riskKritiska)||0)+(Number(s.riskHoga)||0)+(Number(s.riskMedel)||0)+(Number(s.riskLaga)||0);
+                const accepterade = Number(s.riskAccepterade)||0, medvetna = Number(s.riskMedvetna)||0;
+                const obehandlade = Math.max(0, total - medvetna);
+                const warn = accepterade > medvetna;
+                return `<div class="grid4">
+                  ${field("Medvetna / bevakade (kända totalt)", `<input type="number" value="${s.riskMedvetna}" onchange="updateSystem('${s.id}','riskMedvetna',Number(this.value))">`)}
+                  ${field("— varav formellt accepterade", `<input type="number" value="${s.riskAccepterade}" onchange="updateSystem('${s.id}','riskAccepterade',Number(this.value))">`)}
+                  ${field("Ej bedömda / obehandlade", `<input value="${obehandlade}" disabled style="background:#F1F3F0; color:#56666B;">`)}
+                  ${field("Senaste riskbedömning", `<input type="date" value="${esc(s.senasteRiskbedomning)}" onchange="updateSystem('${s.id}','senasteRiskbedomning',this.value)">`)}
+                </div>
+                ${warn ? `<div style="font-size:12px; background:#F4E3C8; color:#8A5A0F; padding:6px 10px; border-radius:4px; margin:-4px 0 10px;">Fler risker är accepterade (${accepterade}) än markerade som medvetna/bevakade (${medvetna}). En accepterad risk räknas alltid som medveten — höj gärna "Medvetna" till minst ${accepterade}.</div>` : ''}
+                <div style="font-size:11.5px; color:#8B9A95; margin:-4px 0 10px;">Av totalt ${total} registrerade risker. "Medveten" är den bredare kategorin: risken är känd och bevakas. "Accepterad" är en delmängd av de medvetna — en beslutsfattare har formellt tagit ställning till just den risken.</div>`;
+              })()}
 
               <div style="margin-top:6px; font-size:12.5px; color:#56666B;">
                 <strong style="color:#16262B;">Kontinuitet:</strong> plan ${esc(s.kontinuitetsplan)} — <button class="btn-link" onclick="setTab('continuity')">redigera i Kontinuitet →</button><br>
@@ -1160,6 +1198,8 @@ function exportExecutiveReport() {
     <div class="stat"><div class="n">${krav.ok}</div>Krav uppfyllda</div>
     <div class="stat"><div class="n">${krav.ej}</div>Krav ej uppfyllda</div>
     <div class="stat"><div class="n">${risk.krit+risk.hog}</div>Höga/kritiska risker</div>
+    <div class="stat"><div class="n">${risk.medvetna}</div>Medvetna/bevakade (kända totalt)</div>
+    <div class="stat"><div class="n">${risk.accepterade}</div>— varav formellt accepterade</div>
     <div class="stat"><div class="n">${forand.total}</div>Kommande förändringar</div>
   </div>
 
